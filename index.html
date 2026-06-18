@@ -3,546 +3,580 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>K.ARI.N SCHNEIDER | MEMBRANE SYSTEM</title>
-    <!-- Professional Video Engine: Video.js -->
+    <title>DATAROOM | 24H</title>
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
     <style>
         :root { 
-            --bg: #ffffff; 
-            --text: #000000; 
-            --accent: #666666; 
-            --border: #dddddd; 
-            --active-pulse: rgba(0, 0, 0, 0.02);
-            --view-bg: #000000;
-        }
-        body.dark-mode { 
             --bg: #000000; 
             --text: #ffffff; 
-            --accent: #999999; 
-            --border: #333333; 
-            --active-pulse: rgba(255, 255, 255, 0.08);
+            --accent: #cccccc;
+            --border: #333333;
+            --pink: #c45c7a;
+            --grey: #888888;
+            --view-bg: #000000;
         }
-        
+        body.light-mode { 
+            --bg: #ffffff; 
+            --text: #000000; 
+            --accent: #333333;
+            --border: #dddddd;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body { 
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
             -webkit-font-smoothing: antialiased;
-            background-color: var(--bg); color: var(--text); margin: 0; padding: 40px;
-            font-size: 13px; line-height: 1.5; letter-spacing: -0.02em; 
-            transition: background-color 0.2s, color 0.2s;
-            padding-bottom: 120px; 
+            background-color: var(--bg); 
+            color: var(--text); 
+            overflow: hidden;
+            width: 100vw; height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        header { margin-bottom: 40px; border-bottom: 1px solid var(--text); padding-bottom: 20px; }
-        .header-top { display: flex; justify-content: space-between; align-items: baseline; }
-        
+        /* HEADER */
+        #header {
+            position: fixed; top: 0; left: 0; right: 0;
+            padding: 20px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100;
+            pointer-events: none;
+        }
+        #header > * { pointer-events: auto; }
+
         .title { 
-            font-size: 20px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; 
-            cursor: pointer; user-select: none;
+            font-size: 13px; font-weight: bold; letter-spacing: 3px; 
+            text-transform: uppercase; cursor: pointer; user-select: none;
+            color: var(--text);
         }
 
         .btn { 
             background: none; border: 1px solid var(--text); color: var(--text);
-            padding: 5px 12px; font-size: 10px; cursor: pointer; text-transform: uppercase;
+            padding: 4px 10px; font-size: 9px; cursor: pointer; text-transform: uppercase;
             transition: 0.2s; letter-spacing: 1px; font-weight: bold;
         }
         .btn:hover { background: var(--text); color: var(--bg); }
         .btn.active { background: var(--text); color: var(--bg); }
 
-        .nav-tags { display: flex; gap: 10px; margin-bottom: 40px; flex-wrap: wrap; }
+        /* FLOATING CANVAS */
+        #canvas {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            overflow: hidden;
+        }
 
-        .admin-only { display: none; }
-        body.admin-active .admin-only { display: block; }
-        body.admin-active .admin-only-inline { display: inline-block; }
-        body.admin-active .admin-only-cell { display: table-cell; }
+        /* SHAPES */
+        .shape-wrap {
+            position: absolute;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        .shape-wrap:hover { opacity: 0.75; }
+        .shape-wrap.expired { opacity: 0.2; pointer-events: none; }
+
+        /* Video — rectangle (landscape) */
+        .shape-video {
+            border: 1px solid var(--pink);
+            background: transparent;
+        }
+        /* Performance — circle */
+        .shape-performance {
+            border: 1px solid var(--pink);
+            border-radius: 50%;
+            background: transparent;
+        }
+        /* Sound — small square */
+        .shape-sound {
+            border: 1px solid var(--grey);
+            background: transparent;
+        }
+        /* WWW/Code — wide thin rectangle */
+        .shape-code {
+            border: 1px solid var(--pink);
+            background: transparent;
+        }
+        /* Image/other — medium rectangle */
+        .shape-image {
+            border: 1px solid var(--grey);
+            background: transparent;
+        }
+
+        .shape-label {
+            position: absolute;
+            bottom: 10px; left: 12px;
+            font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+            color: var(--text); opacity: 0.5;
+            pointer-events: none;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: calc(100% - 24px);
+        }
+
+        .shape-countdown {
+            position: absolute;
+            top: 10px; right: 10px;
+            font-size: 8px; letter-spacing: 1px;
+            color: var(--accent); opacity: 0.6;
+            font-family: monospace;
+            pointer-events: none;
+        }
+
+        .shape-countdown.urgent { color: #ff4444; opacity: 1; }
+
+        /* Admin edit/delete */
+        .shape-actions {
+            position: absolute; top: 8px; left: 8px;
+            display: none; gap: 6px;
+        }
+        body.admin-active .shape-actions { display: flex; }
+        .shape-action-btn {
+            font-size: 13px; cursor: pointer; opacity: 0.4;
+            color: var(--text); transition: 0.2s;
+            background: none; border: none; padding: 0;
+        }
+        .shape-action-btn:hover { opacity: 1; }
+        .shape-del-btn:hover { color: #ff0000; }
+
+        /* BOTTOM BAR */
+        #bottom-bar {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            padding: 14px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100;
+            font-family: monospace; font-size: 9px;
+            color: var(--accent);
+            pointer-events: none;
+        }
+        #bottom-bar > * { pointer-events: auto; }
+        #console-display { opacity: 0.5; }
+        .db-controls { display: flex; gap: 20px; }
+        .db-controls span { cursor: pointer; opacity: 0.4; transition: 0.2s; }
+        .db-controls span:hover { opacity: 1; }
 
         /* REGISTRATION OVERLAY */
         #reg-section { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.9); z-index: 5000;
+            background: rgba(0,0,0,0.92); z-index: 5000;
             display: none; justify-content: center; align-items: center;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(8px);
         }
-        
+        body.light-mode #reg-section { background: rgba(255,255,255,0.92); }
+
         .form-container { 
-            width: 90%; max-width: 650px; padding: 25px; 
+            width: 90%; max-width: 580px; padding: 28px; 
             border: 1px solid var(--text); background: var(--bg); 
-            position: relative;
+            position: relative; max-height: 90vh; overflow-y: auto;
         }
         .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        label { font-size: 9px; text-transform: uppercase; color: var(--accent); margin-bottom: 2px; display: block; letter-spacing: 1px; font-weight: bold; }
+        label { font-size: 9px; text-transform: uppercase; color: var(--accent); margin-bottom: 3px; display: block; letter-spacing: 1px; font-weight: bold; }
         input, select, textarea { 
-            background: none; border: 1px solid var(--border); padding: 8px; 
-            color: var(--text); font-size: 12px; width: 100%; box-sizing: border-box;
-            font-family: inherit; border-radius: 0;
+            background: none; border: 1px solid var(--border); padding: 7px 8px; 
+            color: var(--text); font-size: 11px; width: 100%;
+            font-family: inherit; border-radius: 0; outline: none;
         }
-        textarea { grid-column: span 2; height: 50px; resize: none; }
+        input:focus, select:focus, textarea:focus { border-color: var(--text); }
+        textarea { grid-column: span 2; height: 48px; resize: none; }
+        .form-close {
+            position: absolute; top: 12px; right: 16px; cursor: pointer;
+            font-size: 22px; color: var(--text); opacity: 0.4; transition: 0.2s;
+        }
+        .form-close:hover { opacity: 1; }
 
         #form-preview-container {
-            grid-column: span 2; height: 120px; background: #f0f0f0; border: 1px solid var(--border);
-            display: flex; justify-content: center; align-items: center; margin-bottom: 5px;
-            overflow: hidden; position: relative;
+            grid-column: span 2; height: 110px; background: #111; border: 1px solid var(--border);
+            display: flex; justify-content: center; align-items: center; margin-bottom: 4px;
+            overflow: hidden;
         }
+        body.light-mode #form-preview-container { background: #eee; }
         #form-preview-container img, #form-preview-container video { max-height: 100%; max-width: 100%; object-fit: contain; }
-        body.dark-mode #form-preview-container { background: #111; }
-        
-        .form-close {
-            position: absolute; top: 10px; right: 15px; cursor: pointer;
-            font-size: 24px; color: var(--text); opacity: 0.5; transition: 0.2s;
-        }
-
-        /* THE MATRIX */
-        .matrix { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        th { text-align: left; font-size: 9px; text-transform: uppercase; color: var(--accent); padding-bottom: 12px; border-bottom: 1px solid var(--text); letter-spacing: 1px; }
-        td { padding: 20px 0; border-bottom: 1px solid var(--border); vertical-align: top; cursor: pointer; position: relative; }
-        tr:hover td { background-color: var(--active-pulse); }
-
-        .col-year { width: 75px; font-weight: bold; font-size: 13px; }
-        .col-mode { width: 140px; color: var(--accent); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .col-status { width: 60px; text-align: center; }
-        .col-actions { width: 80px; text-align: right; display: none; }
-
-        /* Chromatic Status Protocol - Circles Only */
-        .status-button {
-            width: 14px !important; height: 14px !important; border-radius: 50% !important; 
-            display: inline-block !important; cursor: pointer; border: none !important;
-            padding: 0 !important; vertical-align: middle; 
-            text-indent: -9999px; overflow: hidden; /* Suppress available/sold text */
-            transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .status-available { background-color: #00cc00 !important; box-shadow: 0 0 10px rgba(0,204,0,0.2); }
-        .status-available:hover { transform: scale(1.4); background-color: #00ff00 !important; }
-        .status-reserved { background-color: #ffcc00 !important; transform: scale(0.8); }
-        .status-sold { background-color: #888888 !important; transform: scale(0.8); }
-
-        .action-btn { color: var(--accent); font-size: 16px; cursor: pointer; padding: 0 6px; transition: 0.2s; opacity: 0.4; }
-        .action-btn:hover { color: var(--text); opacity: 1; }
-        .del-btn:hover { color: #ff0000; }
-
-        /* THE AGENT */
-        #moving-agent {
-            position: absolute; left: 15px; width: 12px; height: 12px; background-color: var(--text); border-radius: 50%;
-            transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 5500; display: none;
-        }
-        .agent-active { display: block !important; animation: activatePulse 1s ease-in-out infinite; }
-        @keyframes activatePulse {
-            0% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(128, 128, 128, 0.5); }
-            50% { transform: scale(3); opacity: 0; }
-            100% { transform: scale(1); opacity: 0; }
-        }
 
         /* VIEWING ROOM */
         #viewing-room {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: var(--view-bg); z-index: 6000; display: none;
-            justify-content: center; align-items: center; transition: background 0.3s;
+            justify-content: center; align-items: center;
         }
-        #media-container { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; position: relative; padding: 80px; box-sizing: border-box; }
-        .video-js { width: 100% !important; height: 100% !important; max-width: 100%; max-height: 100%; }
-        
-        .view-controls { position: absolute; top: 30px; right: 30px; z-index: 7000; display: flex; gap: 10px; align-items: center; }
-        .bg-toggle { width: 18px; height: 18px; border: 1px solid rgba(128,128,128,0.5); cursor: pointer; transition: 0.2s; }
+        #media-container { 
+            width: 100%; height: 100%; display: flex; 
+            justify-content: center; align-items: center; 
+            padding: 80px; 
+        }
+        .video-js { width: 100% !important; height: 100% !important; }
+
+        .view-controls { 
+            position: absolute; top: 24px; right: 24px; z-index: 7000; 
+            display: flex; gap: 8px; align-items: center; 
+        }
+        .bg-toggle { width: 16px; height: 16px; border: 1px solid rgba(128,128,128,0.4); cursor: pointer; transition: 0.2s; }
         .bg-toggle.black { background: #000; }
         .bg-toggle.white { background: #fff; }
         .bg-toggle.grey { background: #888; }
         .bg-toggle:hover { transform: scale(1.2); }
+        .close-btn { 
+            background: var(--text); color: var(--bg); border: none; 
+            padding: 8px 16px; font-size: 10px; font-weight: bold; 
+            cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-left: 16px; 
+        }
 
-        .close-btn { background: var(--text); color: var(--bg); border: none; padding: 10px 18px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-left: 20px; }
-        .purchase-btn { position: absolute; top: 50%; right: 30px; transform: translateY(-50%); z-index: 7000; background: #00cc00; color: #fff; border: none; padding: 25px 10px; font-size: 10px; letter-spacing: 4px; cursor: pointer; text-transform: uppercase; writing-mode: vertical-rl; text-orientation: mixed; transition: 0.3s; }
-        .purchase-btn:hover { background: #00ff00; }
+        /* INVITE OVERLAY */
+        #invite-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.92); z-index: 5500;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(8px);
+        }
+        .invite-box {
+            width: 90%; max-width: 500px;
+            border: 1px solid var(--text); background: var(--bg);
+            padding: 28px; position: relative;
+        }
+        .invite-box h3 { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+        .invite-msg {
+            font-family: monospace; font-size: 11px; line-height: 1.7;
+            border: 1px solid var(--border); padding: 12px;
+            color: var(--accent); margin-bottom: 14px;
+            white-space: pre-wrap; word-break: break-all;
+        }
+        .invite-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
-        #dj-console { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--text); color: var(--bg); padding: 15px 40px; font-family: monospace; font-size: 10px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; box-sizing: border-box; border-top: 1px solid var(--border); }
-        .db-controls { display: flex; gap: 20px; }
-        .db-controls span { cursor: pointer; opacity: 0.6; transition: 0.2s; }
-        .db-controls span:hover { opacity: 1; text-decoration: underline; }
+        /* MOVING AGENT */
+        #moving-agent {
+            position: fixed; left: 15px; width: 10px; height: 10px; 
+            background-color: var(--text); border-radius: 50%;
+            transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+            z-index: 5500; display: none;
+        }
+        .agent-active { display: block !important; animation: pulse 1s ease-in-out infinite; }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(3); opacity: 0; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+
+        .admin-only { display: none; }
+        body.admin-active .admin-only { display: inline-block; }
     </style>
 </head>
-<body class="dark-mode">
+<body>
 
 <div id="moving-agent"></div>
 
-<header>
-    <div class="header-top">
-        <div class="title" id="main-name" onclick="secretHandshake()">DATAROOM</div>
-        <div style="display: flex; gap: 10px;">
-            <button class="btn" onclick="toggleMode()">Invert System</button>
-        </div>
+<!-- HEADER -->
+<div id="header">
+    <div class="title" onclick="secretHandshake()">DATAROOM</div>
+    <div style="display:flex; gap:8px; align-items:center;">
+        <span id="live-count" style="font-size:9px; letter-spacing:1px; opacity:0.4; font-family:monospace;"></span>
+        <button class="btn admin-only" onclick="toggleReg()">+ UPLOAD</button>
+        <button class="btn" onclick="toggleMode()">⬡</button>
     </div>
-</header>
+</div>
 
-<div class="nav-tags">
-    <button class="btn admin-only" id="reg-btn" onclick="toggleReg()" style="border-style: dashed;">+ ADD ENTRY</button>
-    <button class="btn active" onclick="filterMode('ALL', this)">ALL</button>
-    <button class="btn" onclick="filterMode('CODE', this)">CODE</button>
-    <button class="btn" onclick="filterMode('TIME-BASED MEDIA', this)">TIME-BASED MEDIA</button>
-    <button class="btn" onclick="filterMode('PAINTING', this)">PAINTING</button>
-    <button class="btn" onclick="filterMode('DRAWING', this)">DRAWING</button>
-    <button class="btn" onclick="filterMode('+', this)">+</button>
+<!-- FLOATING CANVAS -->
+<div id="canvas"></div>
+
+<!-- BOTTOM BAR -->
+<div id="bottom-bar">
+    <div id="console-display">DATAROOM_24H // IDLE</div>
+    <div class="db-controls">
+        <span class="admin-only" onclick="exportData()">EXPORT</span>
+        <span class="admin-only" onclick="importData()">IMPORT</span>
+    </div>
 </div>
 
 <!-- REGISTRATION OVERLAY -->
 <div id="reg-section" onclick="handleBgClick(event)">
     <div class="form-container" onclick="event.stopPropagation()">
         <div class="form-close" onclick="toggleReg()">×</div>
-        <h2 id="form-title" style="font-size: 11px; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 2px;">Register New Work</h2>
+        <h2 id="form-title" style="font-size:10px; text-transform:uppercase; margin-bottom:16px; letter-spacing:2px;">Upload Work — 24H</h2>
         
         <div id="form-preview-container">
-            <span style="font-size: 9px; opacity: 0.4;">PREVIEW_WINDOW</span>
+            <span style="font-size:9px; opacity:0.3; font-family:monospace;">PREVIEW</span>
         </div>
 
         <form id="archiveForm" class="grid-form">
             <input type="hidden" id="editing-id">
-            
-            <div>
-                <label>Inventory ID</label>
-                <input type="text" id="workId" placeholder="e.g. 2022_KS_TBM">
-            </div>
+            <input type="hidden" id="upload-time">
+
             <div>
                 <label>Year</label>
-                <input type="text" id="year" placeholder="2022" required>
+                <input type="text" id="year" placeholder="2025" required>
             </div>
-            
-            <div style="grid-column: span 2;">
-                <label>Title</label>
-                <input type="text" id="title" placeholder="Title of work">
-            </div>
-
             <div>
                 <label>Mode</label>
                 <select id="mode">
-                    <option value="TIME-BASED MEDIA">TIME-BASED MEDIA</option>
-                    <option value="PAINTINGS">PAINTING</option>
-                    <option value="DRAWING">DRAWING</option>
-                    <option value="CODE">CODE</option>
-                    <option value="+">+</option>
-                </select>
-            </div>
-            <div>
-                <label>Edition / Unique</label>
-                <input type="text" id="edition" placeholder="Edition of 3">
-            </div>
-
-            <textarea id="materials" placeholder="Materials / Technique / Archive Notes"></textarea>
-
-            <div>
-                <label>Location</label>
-                <input type="text" id="loc" placeholder="Studio/Database">
-            </div>
-            <div>
-                <label>Status</label>
-                <select id="status">
-                    <option value="AVAILABLE">AVAILABLE</option>
-                    <option value="RESERVED">RESERVED</option>
-                    <option value="SOLD">SOLD</option>
-                    <option value="RENT">RENT</option>
-                    <option value="PERMANENT COLLECTION">PERMANENT COLLECTION</option>
+                    <option value="VIDEO">VIDEO</option>
+                    <option value="PERFORMANCE">PERFORMANCE</option>
+                    <option value="SOUND">SOUND</option>
+                    <option value="WWW">WWW</option>
+                    <option value="IMAGE">IMAGE</option>
                 </select>
             </div>
 
-            <div style="grid-column: span 2;">
-                <label>Manual Filename (Archival Reference)</label>
-                <input type="text" id="manualPath" placeholder="video.mp4 / video.mov / audio.mp3 / image.jpg">
+            <div style="grid-column:span 2;">
+                <label>Title</label>
+                <input type="text" id="title" placeholder="Title of work" required>
             </div>
 
-            <div style="grid-column: span 2;" id="link-field">
-                <label>URL Link (for CODE entries)</label>
+            <div style="grid-column:span 2;">
+                <label>Artist</label>
+                <input type="text" id="artist" placeholder="Your name">
+            </div>
+
+            <textarea id="materials" placeholder="Notes / description (optional)"></textarea>
+
+            <div style="grid-column:span 2;">
+                <label>File path or URL</label>
+                <input type="text" id="manualPath" placeholder="media/video.mp4 or https://...">
+            </div>
+
+            <div style="grid-column:span 2;">
+                <label>URL Link (for WWW entries)</label>
                 <input type="text" id="linkUrl" placeholder="https://yourproject.com">
             </div>
 
-            <div style="grid-column: span 2;">
-                <label>Access Code (Temporary Password)</label>
-                <input type="text" id="accessCode" placeholder="For restricted pieces">
+            <div style="grid-column:span 2;">
+                <label>Your payment link (PayPal.me / Venmo)</label>
+                <input type="text" id="paymentLink" placeholder="https://paypal.me/yourname">
             </div>
 
-            <div style="grid-column: span 2;">
-                <label>Upload Preview (Auto-populates filename)</label>
-                <input type="file" id="mediaFile" style="border:none; padding:0;" onchange="handleFileSelection(this)">
+            <div style="grid-column:span 2;">
+                <label>Viewer access code</label>
+                <div style="display:flex; gap:8px;">
+                    <input type="text" id="accessCode" placeholder="e.g. WAVE24" style="flex:1;">
+                    <button type="button" class="btn" onclick="generateCode()" style="white-space:nowrap;">GENERATE</button>
+                </div>
             </div>
 
-            <button type="submit" id="submit-btn" class="btn" style="grid-column: span 2; margin-top: 10px; padding: 10px; font-size: 11px;">COMMIT TO ARCHIVE</button>
-            <button type="button" class="btn" onclick="toggleReg()" style="grid-column: span 2; border:none; opacity:0.4;">CANCEL</button>
+            <div style="grid-column:span 2;">
+                <label>Upload file (auto-fills path)</label>
+                <input type="file" id="mediaFile" style="border:none; padding:0; font-size:10px;" onchange="handleFileSelection(this)">
+            </div>
+
+            <button type="submit" id="submit-btn" class="btn" style="grid-column:span 2; margin-top:8px; padding:10px; font-size:10px;">COMMIT — 24H CLOCK STARTS NOW</button>
+            <button type="button" class="btn" onclick="toggleReg()" style="grid-column:span 2; border:none; opacity:0.3; font-size:10px;">CANCEL</button>
         </form>
     </div>
 </div>
 
-<table class="matrix">
-    <thead>
-        <tr>
-            <th class="col-year">YEAR</th>
-            <th class="col-mode">MODE</th>
-            <th>ENTRY / MATERIALS / CONTEXT</th>
-            <th class="col-status">STATUS</th>
-            <th class="col-actions admin-only-cell"></th>
-        </tr>
-    </thead>
-    <tbody id="archive-list"></tbody>
-</table>
-
+<!-- VIEWING ROOM -->
 <div id="viewing-room">
     <div class="view-controls">
-        <div class="bg-toggle black" onclick="setViewBg('#000000')" title="Black"></div>
-        <div class="bg-toggle white" onclick="setViewBg('#ffffff')" title="White"></div>
-        <div class="bg-toggle grey" onclick="setViewBg('#888888')" title="Grey"></div>
-        <button class="close-btn" onclick="closeRoom()">CLOSE ROOM</button>
+        <div class="bg-toggle black" onclick="setViewBg('#000000')"></div>
+        <div class="bg-toggle white" onclick="setViewBg('#ffffff')"></div>
+        <div class="bg-toggle grey" onclick="setViewBg('#888888')"></div>
+        <button class="close-btn" onclick="closeRoom()">CLOSE</button>
     </div>
-    <button id="purchaseInquiry" class="purchase-btn" onclick="sendInquiry()">INQUIRE</button>
     <div id="media-container"></div>
 </div>
 
-<div id="dj-console">
-    <div id="console-display">MEMBRANE_SYSTEM: IDLE // AGENT_PROTOCOL: READY</div>
-    <div class="db-controls">
-        <a href="sandbox.html" style="color:inherit; text-decoration:none; opacity:0.6;">MASTER_CONSOLE</a>
-        <span class="admin-only-inline" onclick="exportData()" style="margin-left: 20px;">EXPORT_ARCHIVE</span>
-        <span class="admin-only-inline" onclick="importData()" style="margin-left: 20px;">IMPORT_ARCHIVE</span>
+<!-- INVITE OVERLAY -->
+<div id="invite-overlay" onclick="closeInvite(event)">
+    <div class="invite-box" onclick="event.stopPropagation()">
+        <div class="form-close" onclick="document.getElementById('invite-overlay').style.display='none'">×</div>
+        <h3>Invite to Watch</h3>
+        <div class="invite-msg" id="invite-text"></div>
+        <div class="invite-actions">
+            <button class="btn" onclick="copyInvite()">COPY</button>
+            <button class="btn" onclick="emailInvite()">SEND BY EMAIL</button>
+            <button class="btn" onclick="document.getElementById('invite-overlay').style.display='none'">CLOSE</button>
+        </div>
     </div>
 </div>
 
 <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
 <script>
-    // --- STUDIO SECURITY ---
-    const STUDIO_ACCESS_CODE = 'studio'; 
-    const INQUIRY_EMAIL = 'karinschneider5@icloud.com';
+    const STUDIO_CODE = 'studio';
+    const DATAROOM_URL = window.location.href.split('?')[0];
 
     let archive = [];
     let vjsPlayer = null;
     let activeWork = null;
-    let isAdmin = sessionStorage.getItem('membrane_admin') === 'true';
-    let currentFilter = 'ALL';
+    let isAdmin = sessionStorage.getItem('dr_admin') === 'true';
+    let positions = {}; // store x,y per item id
+    let countdownTimers = {};
 
+    /* ── INIT ── */
     async function loadArchive() {
         try {
-            // Try loading from data.json first (source of truth)
-            const res = await fetch('data.json?nocache=' + Date.now());
+            const res = await fetch('data.json?nc=' + Date.now());
             if (res.ok) {
                 archive = await res.json();
-                // Sync to localStorage so edits can be tracked
-                localStorage.setItem('membrane_archive', JSON.stringify(archive));
-                document.getElementById('console-display').innerText = 'MEMBRANE_SYSTEM: ARCHIVE_LOADED // ' + archive.length + ' ENTRIES';
-            } else {
-                throw new Error('data.json not found');
-            }
+                localStorage.setItem('dr_archive', JSON.stringify(archive));
+                log('ARCHIVE_LOADED // ' + archive.length + ' ENTRIES');
+            } else throw new Error();
         } catch(e) {
-            // Fallback to localStorage if data.json unavailable (e.g. opening file:// directly)
             try {
-                const stored = localStorage.getItem('membrane_archive');
-                if (stored) {
-                    archive = JSON.parse(stored);
-                    document.getElementById('console-display').innerText = 'MEMBRANE_SYSTEM: LOCAL_CACHE_LOADED // ' + archive.length + ' ENTRIES';
-                }
-            } catch(err) { console.error("Error loading archive", err); }
+                const s = localStorage.getItem('dr_archive');
+                if (s) { archive = JSON.parse(s); log('LOCAL_CACHE // ' + archive.length + ' ENTRIES'); }
+            } catch(err) {}
         }
-        renderList();
+        purgeExpired();
+        renderCanvas();
     }
 
-    function toggleMode() { document.body.classList.toggle('dark-mode'); }
-
-    function secretHandshake() {
-        const entry = prompt("Enter Studio Access Code:");
-        if (!entry) return;
-        if (entry.trim().toLowerCase() === STUDIO_ACCESS_CODE) {
-            isAdmin = true;
-            sessionStorage.setItem('membrane_admin', 'true');
-            document.body.classList.add('admin-active');
-            renderList();
-        } else {
-            isAdmin = false;
-            sessionStorage.removeItem('membrane_admin');
-            document.body.classList.remove('admin-active');
-            renderList();
+    function purgeExpired() {
+        const now = Date.now();
+        const before = archive.length;
+        archive = archive.filter(item => {
+            if (!item.uploadTime) return true;
+            return (now - item.uploadTime) < 24 * 60 * 60 * 1000;
+        });
+        if (archive.length !== before) {
+            localStorage.setItem('dr_archive', JSON.stringify(archive));
         }
     }
 
     if (isAdmin) document.body.classList.add('admin-active');
 
-    function toggleReg(reset = true) {
-        const s = document.getElementById('reg-section');
-        const isHidden = s.style.display === 'none' || s.style.display === '';
-        if (reset && isHidden) {
-            document.getElementById('archiveForm').reset();
-            document.getElementById('editing-id').value = '';
-            document.getElementById('form-title').innerText = "Register New Work";
-            document.getElementById('submit-btn').innerText = "COMMIT TO ARCHIVE";
-            document.getElementById('form-preview-container').innerHTML = '<span style="font-size: 9px; opacity: 0.4;">PREVIEW_WINDOW</span>';
-        }
-        s.style.display = isHidden ? 'flex' : 'none';
-        document.body.style.overflow = isHidden ? 'hidden' : 'auto';
-    }
-
-    function handleBgClick(e) { if(e.target.id === 'reg-section') toggleReg(); }
-
-    function setViewBg(color) { document.getElementById('viewing-room').style.backgroundColor = color; }
-
-    function sendInquiry() {
-        if (!activeWork) return;
-        const subject = encodeURIComponent(`Request for Access: ${activeWork.title}`);
-        const body = encodeURIComponent(`Hello Karin,\n\nI am interested in viewing the following work in the Membrane System:\n\nTitle: ${activeWork.title}\nYear: ${activeWork.year}\n\nPlease provide access credentials.`);
-        window.location.href = `mailto:${INQUIRY_EMAIL}?subject=${subject}&body=${body}`;
-    }
-
-    // SURGICAL IMPROVEMENT: SILENT REGISTRY & AUTO-FILL
-    function handleFileSelection(input) {
-        const file = input.files[0];
-        if (!file) return;
-        
-        // Auto-populate manual filename for archival stability
-        document.getElementById('manualPath').value = file.name;
-        
-        const container = document.getElementById('form-preview-container');
-        const src = URL.createObjectURL(file);
-        if (file.type.startsWith('video')) {
-            container.innerHTML = `<video src="${src}" muted preload="metadata" style="pointer-events: none;"></video>`;
-        } else if (file.type.startsWith('audio')) {
-            container.innerHTML = `<div style="font-family:monospace; font-size:11px; opacity:0.6; text-align:center;">♪ ${file.name}</div>`;
-        } else {
-            container.innerHTML = `<img src="${src}">`;
+    /* ── SHAPE GEOMETRY ── */
+    function shapeGeometry(mode) {
+        switch(mode) {
+            case 'VIDEO':       return { w: 280, h: 180, type: 'rect', cls: 'shape-video' };
+            case 'PERFORMANCE': return { w: 200, h: 200, type: 'circle', cls: 'shape-performance' };
+            case 'SOUND':       return { w: 120, h: 120, type: 'rect', cls: 'shape-sound' };
+            case 'WWW':         return { w: 340, h: 80,  type: 'rect', cls: 'shape-code' };
+            case 'IMAGE':       return { w: 220, h: 160, type: 'rect', cls: 'shape-image' };
+            default:            return { w: 200, h: 140, type: 'rect', cls: 'shape-image' };
         }
     }
 
-    function openEditForm(e, id) {
-        e.stopPropagation();
-        const item = archive.find(i => String(i.id) === String(id));
-        if (!item) return;
-        document.getElementById('editing-id').value = item.id;
-        document.getElementById('year').value = item.year || '';
-        document.getElementById('title').value = item.title || '';
-        document.getElementById('mode').value = item.mode || 'TIME-BASED MEDIA';
-        document.getElementById('loc').value = item.loc || '';
-        document.getElementById('edition').value = item.edition || '';
-        document.getElementById('materials').value = item.materials || '';
-        document.getElementById('status').value = item.status || 'AVAILABLE';
-        document.getElementById('manualPath').value = item.manualPath || '';
-        document.getElementById('accessCode').value = item.accessCode || '';
-        document.getElementById('workId').value = item.workId || '';
-        document.getElementById('linkUrl').value = item.linkUrl || '';
-        
-        const container = document.getElementById('form-preview-container');
-        if (item.type === 'video') {
-            container.innerHTML = `<video src="${item.manualPath}" muted preload="metadata"></video>`;
-        } else {
-            container.innerHTML = `<img src="${item.manualPath}">`;
-        }
-        
-        toggleReg(false);
-    }
+    /* ── RENDER ── */
+    function renderCanvas() {
+        const canvas = document.getElementById('canvas');
+        // Clear old timers
+        Object.values(countdownTimers).forEach(t => clearInterval(t));
+        countdownTimers = {};
+        canvas.innerHTML = '';
 
-    document.getElementById('archiveForm').onsubmit = function(e) {
-        e.preventDefault();
-        const editingId = document.getElementById('editing-id').value;
-        const manualPath = document.getElementById('manualPath').value.trim();
-        const mode = document.getElementById('mode').value;
-        if (!manualPath) return;
-
-        const isVideo = manualPath.toLowerCase().endsWith('.mp4') || manualPath.toLowerCase().endsWith('.mov');
-        const isAudio = manualPath.toLowerCase().endsWith('.mp3');
-        const isCode  = mode === 'CODE';
-        
-        const entryData = {
-            workId: document.getElementById('workId').value,
-            year: document.getElementById('year').value,
-            mode: mode,
-            title: document.getElementById('title').value.trim() || "UNTITLED",
-            loc: document.getElementById('loc').value,
-            edition: document.getElementById('edition').value,
-            materials: document.getElementById('materials').value,
-            status: document.getElementById('status').value,
-            manualPath: manualPath,
-            linkUrl: document.getElementById('linkUrl').value.trim(),
-            accessCode: document.getElementById('accessCode').value.trim(),
-            src: manualPath,
-            type: isVideo ? "video" : isAudio ? "audio" : isCode ? "code" : "image"
-        };
-        
-        if (editingId) {
-            const index = archive.findIndex(i => String(i.id) === String(editingId));
-            archive[index] = { ...archive[index], ...entryData, id: editingId };
-        } else {
-            entryData.id = String(Date.now() + Math.random());
-            archive.push(entryData);
-        }
-        localStorage.setItem('membrane_archive', JSON.stringify(archive));
-        renderList();
-        toggleReg();
-    };
-
-    function deleteWork(e, id) {
-        e.stopPropagation(); 
-        archive = archive.filter(item => String(item.id) !== String(id));
-        localStorage.setItem('membrane_archive', JSON.stringify(archive));
-        renderList();
-    }
-
-    function filterMode(mode, btn) {
-        currentFilter = mode;
-        document.querySelectorAll('.nav-tags .btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderList();
-    }
-
-    function renderList() {
-        const list = document.getElementById('archive-list');
-        list.innerHTML = '';
-        const sorted = [...archive].sort((a,b) => b.year - a.year);
-        
-        sorted.forEach((item) => {
-            if (currentFilter !== 'ALL' && item.mode !== currentFilter) return;
-            const row = document.createElement('tr');
-            row.onclick = function() { activateWork(this, item); };
-            
-            const yearTd = document.createElement('td'); yearTd.className = 'col-year'; yearTd.innerText = item.year;
-            const modeTd = document.createElement('td'); modeTd.className = 'col-mode'; modeTd.innerText = item.mode;
-            const entryTd = document.createElement('td'); entryTd.style.paddingRight = '30px';
-            const titleStrong = document.createElement('strong'); titleStrong.innerText = item.title; entryTd.appendChild(titleStrong);
-            
-            if (item.edition) {
-                const editionSpan = document.createElement('span'); editionSpan.style.opacity = '0.4'; editionSpan.style.fontSize = '9px'; editionSpan.style.marginLeft = '22px'; 
-                editionSpan.innerText = `[${item.edition}]`; entryTd.appendChild(editionSpan);
-            }
-            
-            if (item.materials) {
-                const br = document.createElement('br'); const materialsSpan = document.createElement('span'); 
-                materialsSpan.style.opacity = '0.6'; materialsSpan.style.fontSize = '11px'; materialsSpan.style.display = 'block'; materialsSpan.style.marginTop = '5px'; 
-                materialsSpan.innerText = item.materials; entryTd.appendChild(br); entryTd.appendChild(materialsSpan);
-            }
-
-            const statusTd = document.createElement('td'); statusTd.className = 'col-status';
-            const statusBtn = document.createElement('button'); 
-            statusBtn.className = 'status-button';
-            statusBtn.innerHTML = ''; // Force silence of legacy text
-            
-            if (item.status === 'AVAILABLE') statusBtn.classList.add('status-available');
-            else if (item.status === 'RESERVED') statusBtn.classList.add('status-reserved');
-            else statusBtn.classList.add('status-sold');
-            
-            statusBtn.onclick = function(e) { e.stopPropagation(); if(item.status === 'AVAILABLE') { activeWork = item; sendInquiry(); } };
-            statusTd.appendChild(statusBtn);
-            row.appendChild(yearTd); row.appendChild(modeTd); row.appendChild(entryTd); row.appendChild(statusTd);
-            
-            if (isAdmin) {
-                const actionsTd = document.createElement('td'); actionsTd.className = 'col-actions'; actionsTd.style.display = 'table-cell';
-                const editSpan = document.createElement('span'); editSpan.className = 'action-btn'; editSpan.innerText = '✎'; editSpan.onclick = (e) => openEditForm(e, item.id);
-                const delSpan = document.createElement('span'); delSpan.className = 'action-btn del-btn'; delSpan.innerText = '×'; delSpan.onclick = (e) => deleteWork(e, item.id);
-                actionsTd.appendChild(editSpan); actionsTd.appendChild(delSpan); row.appendChild(actionsTd);
-            }
-            list.appendChild(row);
+        const now = Date.now();
+        const active = archive.filter(item => {
+            if (!item.uploadTime) return true;
+            return (now - item.uploadTime) < 24 * 60 * 60 * 1000;
         });
+
+        document.getElementById('live-count').textContent = active.length + ' LIVE';
+
+        active.forEach((item, i) => {
+            const geo = shapeGeometry(item.mode);
+            const wrap = document.createElement('div');
+            wrap.className = 'shape-wrap';
+            wrap.dataset.id = item.id;
+
+            /* Position: restore or randomize within safe bounds */
+            if (!positions[item.id]) {
+                const maxX = Math.max(50, window.innerWidth  - geo.w - 80);
+                const maxY = Math.max(80, window.innerHeight - geo.h - 80);
+                positions[item.id] = {
+                    x: 60 + (i * 137 + Math.floor(i * 0.7 * maxX)) % maxX,
+                    y: 60 + (i * 89  + Math.floor(i * 0.5 * maxY)) % maxY
+                };
+            }
+            const pos = positions[item.id];
+            wrap.style.left = pos.x + 'px';
+            wrap.style.top  = pos.y + 'px';
+            wrap.style.width  = geo.w + 'px';
+            wrap.style.height = geo.h + 'px';
+
+            /* Shape element */
+            const shape = document.createElement('div');
+            shape.className = geo.cls;
+            shape.style.width = '100%';
+            shape.style.height = '100%';
+            shape.style.position = 'relative';
+            if (geo.type === 'circle') shape.style.borderRadius = '50%';
+
+            /* Label */
+            const label = document.createElement('div');
+            label.className = 'shape-label';
+            label.textContent = (item.artist ? item.artist + ' — ' : '') + item.title;
+            shape.appendChild(label);
+
+            /* Countdown */
+            const cd = document.createElement('div');
+            cd.className = 'shape-countdown';
+            shape.appendChild(cd);
+
+            if (item.uploadTime) {
+                countdownTimers[item.id] = setInterval(() => {
+                    const remaining = (item.uploadTime + 24*60*60*1000) - Date.now();
+                    if (remaining <= 0) {
+                        clearInterval(countdownTimers[item.id]);
+                        cd.textContent = 'EXPIRED';
+                        wrap.classList.add('expired');
+                        return;
+                    }
+                    const h = Math.floor(remaining / 3600000);
+                    const m = Math.floor((remaining % 3600000) / 60000);
+                    const s = Math.floor((remaining % 60000) / 1000);
+                    cd.textContent = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+                    if (remaining < 3600000) cd.classList.add('urgent');
+                }, 1000);
+            }
+
+            /* Invite button inside shape */
+            const inviteBtn = document.createElement('button');
+            inviteBtn.textContent = 'INVITE';
+            inviteBtn.style.cssText = 'position:absolute; bottom:10px; right:10px; background:none; border:none; font-size:8px; letter-spacing:1px; color:var(--accent); cursor:pointer; text-transform:uppercase; opacity:0.5; padding:2px 4px;';
+            inviteBtn.onmouseenter = () => inviteBtn.style.opacity = '1';
+            inviteBtn.onmouseleave = () => inviteBtn.style.opacity = '0.5';
+            inviteBtn.onclick = (e) => { e.stopPropagation(); showInvite(item); };
+            shape.appendChild(inviteBtn);
+
+            /* Admin actions */
+            const actions = document.createElement('div');
+            actions.className = 'shape-actions';
+            const editBtn = document.createElement('button');
+            editBtn.className = 'shape-action-btn'; editBtn.textContent = '✎';
+            editBtn.onclick = (e) => { e.stopPropagation(); openEditForm(e, item.id); };
+            const delBtn = document.createElement('button');
+            delBtn.className = 'shape-action-btn shape-del-btn'; delBtn.textContent = '×';
+            delBtn.onclick = (e) => { e.stopPropagation(); deleteWork(item.id); };
+            actions.appendChild(editBtn); actions.appendChild(delBtn);
+            shape.appendChild(actions);
+
+            wrap.appendChild(shape);
+
+            /* Click to watch */
+            wrap.onclick = () => activateWork(item);
+
+            /* Drag to reposition */
+            makeDraggable(wrap, item.id);
+
+            canvas.appendChild(wrap);
+        });
+
+        log('DATAROOM_24H // ' + active.length + ' LIVE');
     }
 
-    function activateWork(element, item) {
-        const agent = document.getElementById('moving-agent');
-        const rect = element.getBoundingClientRect();
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        agent.style.top = (rect.top + scrollTop + (rect.height / 2) - 6) + "px";
-        agent.classList.add('agent-active');
-        setTimeout(() => { 
-            if (!isAdmin && item.accessCode && item.accessCode !== "") {
-                const pass = prompt(`This piece is restricted. Please enter the studio access code:`);
-                if (pass !== item.accessCode) {
-                    alert("INVALID_CODE // ACCESS_DENIED");
-                    agent.classList.remove('agent-active'); return;
-                }
+    /* ── DRAG SHAPES ── */
+    function makeDraggable(el, id) {
+        let dragging = false, startX, startY, origLeft, origTop;
+        el.addEventListener('mousedown', (e) => {
+            if (e.target.tagName === 'BUTTON') return;
+            dragging = true;
+            startX = e.clientX; startY = e.clientY;
+            origLeft = parseFloat(el.style.left); origTop = parseFloat(el.style.top);
+            e.preventDefault();
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (!dragging) return;
+            const nx = origLeft + (e.clientX - startX);
+            const ny = origTop  + (e.clientY - startY);
+            el.style.left = nx + 'px'; el.style.top = ny + 'px';
+            positions[id] = { x: nx, y: ny };
+        });
+        window.addEventListener('mouseup', () => { dragging = false; });
+    }
+
+    /* ── ACTIVATE / WATCH ── */
+    function activateWork(item) {
+        if (item.accessCode && item.accessCode !== '') {
+            const pass = prompt('Enter access code to watch:');
+            if (!pass || pass.trim() !== item.accessCode.trim()) {
+                alert('INVALID_CODE // ACCESS_DENIED');
+                return;
             }
-            openRoom(item); 
-        }, 800); 
+        }
+        openRoom(item);
     }
 
     function openRoom(item) {
@@ -553,50 +587,45 @@
         room.style.display = 'flex';
         document.body.style.overflow = 'hidden';
         activeWork = item;
-        
-        if (item.type === 'code' && item.linkUrl) {
-            /* CODE with a URL — open in new tab, close the room */
+
+        if (item.mode === 'WWW' && item.linkUrl) {
             window.open(item.linkUrl, '_blank');
-            closeRoom();
-            return;
+            closeRoom(); return;
         }
 
-        if (item.type === 'video') {
-            const vidId = 'studio-player-' + Date.now();
+        const ext = (item.manualPath || '').toLowerCase().split('.').pop();
+        const isVideo = ['mp4','mov'].includes(ext);
+        const isAudio = ext === 'mp3';
+
+        if (isVideo) {
+            const vidId = 'dr-player-' + Date.now();
             const vidEl = document.createElement('video');
-            vidEl.id = vidId;
-            vidEl.className = 'video-js vjs-big-play-centered vjs-theme-city';
-            vidEl.setAttribute('controls', 'true');
-            vidEl.setAttribute('preload', 'auto');
-            vidEl.setAttribute('playsinline', 'true');
-            vidEl.style.width = "100%"; vidEl.style.height = "100%";
+            vidEl.id = vidId; vidEl.className = 'video-js vjs-big-play-centered';
+            vidEl.setAttribute('controls',''); vidEl.setAttribute('preload','auto');
+            vidEl.setAttribute('playsinline','');
+            vidEl.style.cssText = 'width:100%; height:100%;';
             container.appendChild(vidEl);
-            vjsPlayer = videojs(vidId, { 
-                autoplay: true, muted: true, fluid: false, responsive: true, 
-                sources: [{ src: item.manualPath, type: item.manualPath.toLowerCase().endsWith('.mov') ? 'video/quicktime' : 'video/mp4' }] 
+            vjsPlayer = videojs(vidId, {
+                autoplay: true, muted: true, fluid: false, responsive: true,
+                sources: [{ src: item.manualPath, type: ext === 'mov' ? 'video/quicktime' : 'video/mp4' }]
             });
-            vjsPlayer.ready(function() { this.play().catch(e => { this.muted(true); this.play(); }); });
-
-        } else if (item.type === 'audio') {
-            /* MP3 — show title + native audio player centered */
+            vjsPlayer.ready(function() { this.play().catch(() => { this.muted(true); this.play(); }); });
+        } else if (isAudio) {
             const wrap = document.createElement('div');
-            wrap.style.cssText = 'display:flex; flex-direction:column; align-items:center; gap:24px;';
-            const titleEl = document.createElement('div');
-            titleEl.style.cssText = 'color:#fff; font-family:monospace; font-size:13px; letter-spacing:2px; text-transform:uppercase;';
-            titleEl.innerText = item.title;
+            wrap.style.cssText = 'display:flex; flex-direction:column; align-items:center; gap:20px;';
+            const t = document.createElement('div');
+            t.style.cssText = 'color:#fff; font-family:monospace; font-size:12px; letter-spacing:2px; text-transform:uppercase;';
+            t.textContent = item.title;
             const audio = document.createElement('audio');
-            audio.controls = true;
-            audio.autoplay = true;
-            audio.src = item.manualPath;
-            audio.style.cssText = 'width:400px; max-width:80vw;';
-            wrap.appendChild(titleEl);
-            wrap.appendChild(audio);
+            audio.controls = true; audio.autoplay = true; audio.src = item.manualPath;
+            audio.style.cssText = 'width:380px; max-width:80vw;';
+            wrap.appendChild(t); wrap.appendChild(audio);
             container.appendChild(wrap);
-
         } else {
             const img = document.createElement('img');
-            img.src = item.manualPath; img.style.maxWidth = "85%"; img.style.maxHeight = "85%"; img.style.objectFit = "contain"; img.style.display = "block";
-            img.onerror = () => { container.innerHTML = `<div style="color:white; font-family:monospace; font-size:11px; text-align:center;">ERROR: MEDIA_NOT_FOUND // CHECK_FILENAME: ${item.manualPath}</div>`; };
+            img.src = item.manualPath;
+            img.style.cssText = 'max-width:85%; max-height:85%; object-fit:contain;';
+            img.onerror = () => { container.innerHTML = '<div style="color:#fff;font-family:monospace;font-size:11px;">MEDIA NOT FOUND</div>'; };
             container.appendChild(img);
         }
     }
@@ -605,24 +634,165 @@
         if (vjsPlayer) { vjsPlayer.dispose(); vjsPlayer = null; }
         document.getElementById('viewing-room').style.display = 'none';
         document.getElementById('media-container').innerHTML = '';
-        document.getElementById('moving-agent').classList.remove('agent-active');
-        document.body.style.overflow = 'auto';
-        setViewBg('#000000'); 
+        document.body.style.overflow = 'hidden';
+        setViewBg('#000000');
     }
 
+    function setViewBg(c) { document.getElementById('viewing-room').style.backgroundColor = c; }
+
+    /* ── INVITE ── */
+    function showInvite(item) {
+        const payLine = item.paymentLink ? `\nPay $10 to watch: ${item.paymentLink}` : '';
+        const codeLine = item.accessCode ? `\nAccess code (after payment): ${item.accessCode}` : '';
+        const msg = `You are invited to watch:\n\n"${item.title}"${item.artist ? ' by ' + item.artist : ''} (${item.year})\n\nAvailable for 24 hours only.\nDataroom: ${DATAROOM_URL}${payLine}${codeLine}`;
+        document.getElementById('invite-text').textContent = msg;
+        document.getElementById('invite-overlay').style.display = 'flex';
+        activeWork = item;
+    }
+
+    function closeInvite(e) {
+        if (e.target.id === 'invite-overlay') document.getElementById('invite-overlay').style.display = 'none';
+    }
+
+    function copyInvite() {
+        navigator.clipboard.writeText(document.getElementById('invite-text').textContent)
+            .then(() => log('INVITE_COPIED'));
+    }
+
+    function emailInvite() {
+        if (!activeWork) return;
+        const subject = encodeURIComponent('Invitation: ' + activeWork.title + ' — DATAROOM 24H');
+        const body = encodeURIComponent(document.getElementById('invite-text').textContent);
+        window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
+    }
+
+    /* ── FORM ── */
+    function toggleReg(reset = true) {
+        const s = document.getElementById('reg-section');
+        const hidden = s.style.display === 'none' || s.style.display === '';
+        if (reset && hidden) {
+            document.getElementById('archiveForm').reset();
+            document.getElementById('editing-id').value = '';
+            document.getElementById('form-title').textContent = 'Upload Work — 24H Clock Starts Now';
+            document.getElementById('submit-btn').textContent = 'COMMIT — 24H CLOCK STARTS NOW';
+            document.getElementById('form-preview-container').innerHTML = '<span style="font-size:9px;opacity:0.3;font-family:monospace;">PREVIEW</span>';
+        }
+        s.style.display = hidden ? 'flex' : 'none';
+    }
+
+    function handleBgClick(e) { if (e.target.id === 'reg-section') toggleReg(); }
+
+    function generateCode() {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let code = '';
+        for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+        document.getElementById('accessCode').value = code;
+    }
+
+    function handleFileSelection(input) {
+        const file = input.files[0]; if (!file) return;
+        document.getElementById('manualPath').value = 'media/' + file.name;
+        const container = document.getElementById('form-preview-container');
+        const src = URL.createObjectURL(file);
+        if (file.type.startsWith('video')) {
+            container.innerHTML = `<video src="${src}" muted preload="metadata" style="pointer-events:none;max-height:100%;"></video>`;
+        } else if (file.type.startsWith('audio')) {
+            container.innerHTML = `<div style="font-family:monospace;font-size:11px;opacity:0.5;">♪ ${file.name}</div>`;
+        } else {
+            container.innerHTML = `<img src="${src}" style="max-height:100%;max-width:100%;object-fit:contain;">`;
+        }
+    }
+
+    function openEditForm(e, id) {
+        e.stopPropagation();
+        const item = archive.find(i => String(i.id) === String(id)); if (!item) return;
+        document.getElementById('editing-id').value = item.id;
+        document.getElementById('year').value = item.year || '';
+        document.getElementById('title').value = item.title || '';
+        document.getElementById('mode').value = item.mode || 'VIDEO';
+        document.getElementById('artist').value = item.artist || '';
+        document.getElementById('materials').value = item.materials || '';
+        document.getElementById('manualPath').value = item.manualPath || '';
+        document.getElementById('linkUrl').value = item.linkUrl || '';
+        document.getElementById('paymentLink').value = item.paymentLink || '';
+        document.getElementById('accessCode').value = item.accessCode || '';
+        document.getElementById('form-title').textContent = 'Edit Entry';
+        document.getElementById('submit-btn').textContent = 'UPDATE';
+        toggleReg(false);
+    }
+
+    document.getElementById('archiveForm').onsubmit = function(e) {
+        e.preventDefault();
+        const editingId = document.getElementById('editing-id').value;
+        const entryData = {
+            year:        document.getElementById('year').value,
+            mode:        document.getElementById('mode').value,
+            title:       document.getElementById('title').value.trim() || 'UNTITLED',
+            artist:      document.getElementById('artist').value.trim(),
+            materials:   document.getElementById('materials').value,
+            manualPath:  document.getElementById('manualPath').value.trim(),
+            linkUrl:     document.getElementById('linkUrl').value.trim(),
+            paymentLink: document.getElementById('paymentLink').value.trim(),
+            accessCode:  document.getElementById('accessCode').value.trim(),
+            uploadTime:  editingId ? (archive.find(i=>String(i.id)===String(editingId))?.uploadTime || Date.now()) : Date.now()
+        };
+        if (editingId) {
+            const idx = archive.findIndex(i => String(i.id) === String(editingId));
+            archive[idx] = { ...archive[idx], ...entryData, id: editingId };
+        } else {
+            entryData.id = String(Date.now() + Math.random());
+            archive.push(entryData);
+        }
+        localStorage.setItem('dr_archive', JSON.stringify(archive));
+        toggleReg();
+        renderCanvas();
+    };
+
+    function deleteWork(id) {
+        archive = archive.filter(i => String(i.id) !== String(id));
+        delete positions[id];
+        localStorage.setItem('dr_archive', JSON.stringify(archive));
+        renderCanvas();
+    }
+
+    /* ── ADMIN ── */
+    function secretHandshake() {
+        const entry = prompt('Studio access code:');
+        if (!entry) return;
+        if (entry.trim().toLowerCase() === STUDIO_CODE) {
+            isAdmin = true;
+            sessionStorage.setItem('dr_admin', 'true');
+            document.body.classList.add('admin-active');
+        } else {
+            isAdmin = false;
+            sessionStorage.removeItem('dr_admin');
+            document.body.classList.remove('admin-active');
+        }
+        renderCanvas();
+    }
+
+    function toggleMode() {
+        document.body.classList.toggle('light-mode');
+    }
+
+    /* ── EXPORT / IMPORT ── */
     function exportData() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(archive, null, 2));
-        const link = document.createElement('a'); link.setAttribute("href", dataStr); link.setAttribute("download", "data.json"); document.body.appendChild(link); link.click(); link.remove();
-        document.getElementById('console-display').innerText = 'EXPORT_COMPLETE // Upload data.json to GitHub to publish changes';
+        const s = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(archive, null, 2));
+        const a = document.createElement('a'); a.href = s; a.download = 'data.json';
+        document.body.appendChild(a); a.click(); a.remove();
+        log('EXPORT_COMPLETE');
     }
 
     function importData() {
         const input = document.createElement('input'); input.type = 'file';
         input.onchange = e => {
-            const reader = new FileReader(); reader.readAsText(e.target.files[0], 'UTF-8');
-            reader.onload = re => { try { archive = JSON.parse(re.target.result); localStorage.setItem('membrane_archive', JSON.stringify(archive)); renderList(); } catch(err) {} }
+            const r = new FileReader(); r.readAsText(e.target.files[0]);
+            r.onload = re => { try { archive = JSON.parse(re.target.result); localStorage.setItem('dr_archive', JSON.stringify(archive)); renderCanvas(); } catch(err) {} };
         }; input.click();
     }
+
+    function log(msg) { document.getElementById('console-display').textContent = msg; }
+
     loadArchive();
 </script>
 </body>
