@@ -3,173 +3,303 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>DATAROOM | 24H</title>
+    <title>COMMONS ON DEMAND — 24H</title>
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
     <style>
-        :root { 
-            --bg: #000000; 
-            --text: #ffffff; 
+        :root {
+            --bg: #000000;
+            --text: #ffffff;
             --accent: #cccccc;
             --border: #333333;
             --pink: #c45c7a;
+            --yellow: #d4c84a;
             --grey: #888888;
             --view-bg: #000000;
-        }
-        body.light-mode { 
-            --bg: #ffffff; 
-            --text: #000000; 
-            --accent: #333333;
-            --border: #dddddd;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body { 
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             -webkit-font-smoothing: antialiased;
-            background-color: var(--bg); 
-            color: var(--text); 
+            background: var(--bg);
+            color: var(--text);
             overflow: hidden;
             width: 100vw; height: 100vh;
-            transition: background-color 0.3s, color 0.3s;
         }
 
-        /* HEADER */
+        /* ── HEADER ── */
         #header {
             position: fixed; top: 0; left: 0; right: 0;
             padding: 20px 30px;
             display: flex; justify-content: space-between; align-items: center;
-            z-index: 100;
-            pointer-events: none;
+            z-index: 100; pointer-events: none;
         }
         #header > * { pointer-events: auto; }
 
-        .title { 
-            font-size: 13px; font-weight: bold; letter-spacing: 3px; 
+        .site-title {
+            font-size: 11px; font-weight: bold; letter-spacing: 3px;
             text-transform: uppercase; cursor: pointer; user-select: none;
             color: var(--text);
         }
 
-        .btn { 
+        .header-right {
+            display: flex; gap: 10px; align-items: center;
+        }
+
+        .live-count {
+            font-size: 9px; letter-spacing: 1px; opacity: 0.4;
+            font-family: monospace; color: var(--text);
+        }
+
+        .btn {
             background: none; border: 1px solid var(--text); color: var(--text);
-            padding: 4px 10px; font-size: 9px; cursor: pointer; text-transform: uppercase;
-            transition: 0.2s; letter-spacing: 1px; font-weight: bold;
+            padding: 4px 10px; font-size: 9px; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 1px; font-weight: bold;
+            transition: 0.15s;
         }
         .btn:hover { background: var(--text); color: var(--bg); }
-        .btn.active { background: var(--text); color: var(--bg); }
 
-        /* FLOATING CANVAS */
+        /* ── MAIN CANVAS ── */
         #canvas {
             position: fixed; top: 0; left: 0;
             width: 100vw; height: 100vh;
             overflow: hidden;
         }
 
-        /* SHAPES */
+        /* ── IDENTITY SHAPES (main canvas) ── */
+        .identity-wrap {
+            position: absolute; cursor: pointer;
+            transition: opacity 0.3s;
+            user-select: none;
+        }
+        .identity-wrap:hover .identity-shape { opacity: 0.7; }
+
+        /* Artist = circle, pink */
+        .identity-circle {
+            border-radius: 50%;
+            border: 1px solid var(--pink);
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
+        }
+        .identity-circle.permanent {
+            border-color: #444;
+            opacity: 0.35;
+        }
+
+        /* Curator = oval, yellow */
+        .identity-oval {
+            border-radius: 50%;
+            border: 1px solid var(--yellow);
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
+        }
+        .identity-oval.permanent {
+            border-color: #444;
+            opacity: 0.35;
+        }
+
+        .identity-initials {
+            font-size: 11px; font-weight: bold; letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text); opacity: 0.85;
+            pointer-events: none;
+        }
+        .identity-name {
+            position: absolute; bottom: -18px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 8px; letter-spacing: 1px; text-transform: uppercase;
+            color: var(--accent); opacity: 0.5;
+            white-space: nowrap; pointer-events: none;
+        }
+        .identity-countdown {
+            position: absolute; top: -16px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 7px; letter-spacing: 1px;
+            font-family: monospace; color: var(--accent); opacity: 0.5;
+            white-space: nowrap; pointer-events: none;
+        }
+        .identity-countdown.urgent { color: #ff4444; opacity: 1; }
+
+        /* ── CLUSTER CANVAS (sub-level) ── */
+        #cluster-view {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: var(--bg);
+            z-index: 500; display: none;
+            overflow: hidden;
+        }
+
+        #cluster-header {
+            position: fixed; top: 0; left: 0; right: 0;
+            padding: 20px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 600; pointer-events: none;
+        }
+        #cluster-header > * { pointer-events: auto; }
+
+        .cluster-title-block { display: flex; flex-direction: column; gap: 3px; }
+        .cluster-maker-name {
+            font-size: 11px; font-weight: bold; letter-spacing: 2px;
+            text-transform: uppercase; color: var(--text);
+        }
+        .cluster-role {
+            font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--accent); opacity: 0.4;
+        }
+
+        #cluster-canvas {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ── WORK SHAPES (cluster level) ── */
         .shape-wrap {
-            position: absolute;
-            cursor: pointer;
+            position: absolute; cursor: pointer;
             transition: opacity 0.3s;
         }
         .shape-wrap:hover { opacity: 0.75; }
-        .shape-wrap.expired { opacity: 0.2; pointer-events: none; }
+        .shape-wrap.expired { opacity: 0.15; pointer-events: none; }
 
-        /* Video — rectangle (landscape) */
+        /* VIDEO — landscape rectangle */
         .shape-video {
             border: 1px solid var(--pink);
-            background: transparent;
+            background: transparent; position: relative;
         }
-        /* Performance — circle */
+        /* PERFORMANCE — circle */
         .shape-performance {
             border: 1px solid var(--pink);
-            border-radius: 50%;
-            background: transparent;
+            border-radius: 50%; background: transparent; position: relative;
         }
-        /* Sound — small square */
+        /* SOUND — small square */
         .shape-sound {
             border: 1px solid var(--grey);
-            background: transparent;
+            background: transparent; position: relative;
         }
-        /* WWW/Code — wide thin rectangle */
+        /* WWW — wide thin */
         .shape-code {
             border: 1px solid var(--pink);
-            background: transparent;
+            background: transparent; position: relative;
         }
-        /* Image/other — medium rectangle */
+        /* IMAGE — medium rect */
         .shape-image {
             border: 1px solid var(--grey);
-            background: transparent;
+            background: transparent; position: relative;
         }
 
-        .shape-label {
+        /* Title centered in shape */
+        .shape-title {
             position: absolute;
-            bottom: 10px; left: 12px;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
             font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
-            color: var(--text); opacity: 0.5;
+            color: var(--text); opacity: 0.6;
+            pointer-events: none;
+            text-align: center;
+            width: calc(100% - 20px);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        .shape-artist {
+            position: absolute; bottom: 10px; left: 12px;
+            font-size: 8px; letter-spacing: 1px; text-transform: uppercase;
+            color: var(--accent); opacity: 0.4;
             pointer-events: none;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            max-width: calc(100% - 24px);
+            max-width: calc(100% - 80px);
         }
 
         .shape-countdown {
-            position: absolute;
-            top: 10px; right: 10px;
+            position: absolute; top: 10px; right: 10px;
             font-size: 8px; letter-spacing: 1px;
-            color: var(--accent); opacity: 0.6;
-            font-family: monospace;
-            pointer-events: none;
+            color: var(--accent); opacity: 0.5;
+            font-family: monospace; pointer-events: none;
         }
-
         .shape-countdown.urgent { color: #ff4444; opacity: 1; }
 
-        /* Admin edit/delete */
-        .shape-actions {
-            position: absolute; top: 8px; left: 8px;
-            display: none; gap: 6px;
+        .shape-invite-btn {
+            position: absolute; bottom: 10px; right: 10px;
+            background: none; border: none;
+            font-size: 8px; letter-spacing: 1px; color: var(--accent);
+            cursor: pointer; text-transform: uppercase; opacity: 0.4; padding: 2px 4px;
+            transition: 0.15s;
         }
+        .shape-invite-btn:hover { opacity: 1; }
+
+        /* Admin */
+        .shape-actions { position: absolute; top: 8px; left: 8px; display: none; gap: 6px; }
         body.admin-active .shape-actions { display: flex; }
         .shape-action-btn {
             font-size: 13px; cursor: pointer; opacity: 0.4;
-            color: var(--text); transition: 0.2s;
-            background: none; border: none; padding: 0;
+            color: var(--text); background: none; border: none; padding: 0; transition: 0.15s;
         }
         .shape-action-btn:hover { opacity: 1; }
         .shape-del-btn:hover { color: #ff0000; }
 
-        /* BOTTOM BAR */
+        /* ── BOTTOM BAR ── */
         #bottom-bar {
             position: fixed; bottom: 0; left: 0; right: 0;
             padding: 14px 30px;
             display: flex; justify-content: space-between; align-items: center;
-            z-index: 100;
-            font-family: monospace; font-size: 9px;
-            color: var(--accent);
-            pointer-events: none;
+            z-index: 100; font-family: monospace; font-size: 9px;
+            color: var(--accent); pointer-events: none;
         }
         #bottom-bar > * { pointer-events: auto; }
-        #console-display { opacity: 0.5; }
+        #console-display { opacity: 0.4; }
         .db-controls { display: flex; gap: 20px; }
-        .db-controls span { cursor: pointer; opacity: 0.4; transition: 0.2s; }
+        .db-controls span { cursor: pointer; opacity: 0.35; transition: 0.15s; }
         .db-controls span:hover { opacity: 1; }
 
-        /* REGISTRATION OVERLAY */
-        #reg-section { 
+        /* ── VIEWING ROOM ── */
+        #viewing-room {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.92); z-index: 5000;
+            background: var(--view-bg); z-index: 2000;
             display: none; justify-content: center; align-items: center;
-            backdrop-filter: blur(8px);
         }
-        body.light-mode #reg-section { background: rgba(255,255,255,0.92); }
+        #media-container {
+            width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center; padding: 80px;
+        }
+        .view-controls {
+            position: absolute; top: 24px; right: 24px; z-index: 2100;
+            display: flex; gap: 8px; align-items: center;
+        }
+        .bg-toggle {
+            width: 14px; height: 14px; border: 1px solid rgba(128,128,128,0.4);
+            cursor: pointer; transition: 0.15s;
+        }
+        .bg-toggle.black { background: #000; }
+        .bg-toggle.white { background: #fff; }
+        .bg-toggle.grey  { background: #888; }
+        .bg-toggle:hover { transform: scale(1.2); }
+        .close-btn {
+            background: var(--text); color: var(--bg); border: none;
+            padding: 7px 14px; font-size: 9px; font-weight: bold;
+            cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-left: 16px;
+        }
 
-        .form-container { 
-            width: 90%; max-width: 580px; padding: 28px; 
-            border: 1px solid var(--text); background: var(--bg); 
+        /* ── UPLOAD OVERLAY ── */
+        #reg-section {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.93); z-index: 3000;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(6px);
+        }
+        .form-container {
+            width: 90%; max-width: 560px; padding: 28px;
+            border: 1px solid var(--text); background: var(--bg);
             position: relative; max-height: 90vh; overflow-y: auto;
         }
         .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        label { font-size: 9px; text-transform: uppercase; color: var(--accent); margin-bottom: 3px; display: block; letter-spacing: 1px; font-weight: bold; }
-        input, select, textarea { 
-            background: none; border: 1px solid var(--border); padding: 7px 8px; 
+        label {
+            font-size: 9px; text-transform: uppercase; color: var(--accent);
+            margin-bottom: 3px; display: block; letter-spacing: 1px; font-weight: bold;
+        }
+        input, select, textarea {
+            background: none; border: 1px solid var(--border); padding: 7px 8px;
             color: var(--text); font-size: 11px; width: 100%;
             font-family: inherit; border-radius: 0; outline: none;
         }
@@ -177,79 +307,59 @@
         textarea { grid-column: span 2; height: 48px; resize: none; }
         .form-close {
             position: absolute; top: 12px; right: 16px; cursor: pointer;
-            font-size: 22px; color: var(--text); opacity: 0.4; transition: 0.2s;
+            font-size: 22px; color: var(--text); opacity: 0.35; transition: 0.15s;
         }
         .form-close:hover { opacity: 1; }
-
         #form-preview-container {
-            grid-column: span 2; height: 110px; background: #111; border: 1px solid var(--border);
-            display: flex; justify-content: center; align-items: center; margin-bottom: 4px;
-            overflow: hidden;
+            grid-column: span 2; height: 100px;
+            background: #0a0a0a; border: 1px solid var(--border);
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden; margin-bottom: 4px;
         }
-        body.light-mode #form-preview-container { background: #eee; }
         #form-preview-container img, #form-preview-container video { max-height: 100%; max-width: 100%; object-fit: contain; }
 
-        /* VIEWING ROOM */
-        #viewing-room {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: var(--view-bg); z-index: 6000; display: none;
-            justify-content: center; align-items: center;
-        }
-        #media-container { 
-            width: 100%; height: 100%; display: flex; 
-            justify-content: center; align-items: center; 
-            padding: 80px; 
-        }
-        .video-js { width: 100% !important; height: 100% !important; }
-
-        .view-controls { 
-            position: absolute; top: 24px; right: 24px; z-index: 7000; 
-            display: flex; gap: 8px; align-items: center; 
-        }
-        .bg-toggle { width: 16px; height: 16px; border: 1px solid rgba(128,128,128,0.4); cursor: pointer; transition: 0.2s; }
-        .bg-toggle.black { background: #000; }
-        .bg-toggle.white { background: #fff; }
-        .bg-toggle.grey { background: #888; }
-        .bg-toggle:hover { transform: scale(1.2); }
-        .close-btn { 
-            background: var(--text); color: var(--bg); border: none; 
-            padding: 8px 16px; font-size: 10px; font-weight: bold; 
-            cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-left: 16px; 
-        }
-
-        /* INVITE OVERLAY */
+        /* ── INVITE OVERLAY ── */
         #invite-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.92); z-index: 5500;
+            background: rgba(0,0,0,0.92); z-index: 4000;
             display: none; justify-content: center; align-items: center;
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(6px);
         }
         .invite-box {
-            width: 90%; max-width: 500px;
+            width: 90%; max-width: 480px;
             border: 1px solid var(--text); background: var(--bg);
             padding: 28px; position: relative;
         }
-        .invite-box h3 { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+        .invite-box h3 {
+            font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+            margin-bottom: 14px; opacity: 0.5;
+        }
         .invite-msg {
-            font-family: monospace; font-size: 11px; line-height: 1.7;
+            font-family: monospace; font-size: 10px; line-height: 1.8;
             border: 1px solid var(--border); padding: 12px;
             color: var(--accent); margin-bottom: 14px;
             white-space: pre-wrap; word-break: break-all;
         }
         .invite-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
-        /* MOVING AGENT */
-        #moving-agent {
-            position: fixed; left: 15px; width: 10px; height: 10px; 
-            background-color: var(--text); border-radius: 50%;
-            transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
-            z-index: 5500; display: none;
+        /* ── LEGEND ── */
+        #legend {
+            position: fixed; bottom: 36px; right: 30px;
+            display: flex; flex-direction: column; gap: 8px;
+            z-index: 100; pointer-events: none;
         }
-        .agent-active { display: block !important; animation: pulse 1s ease-in-out infinite; }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(3); opacity: 0; }
-            100% { transform: scale(1); opacity: 0; }
+        .legend-item {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 8px; letter-spacing: 1px; text-transform: uppercase;
+            color: var(--accent); opacity: 0.35;
+        }
+        .legend-circle {
+            width: 14px; height: 14px; border-radius: 50%;
+            border: 1px solid var(--pink); flex-shrink: 0;
+        }
+        .legend-oval {
+            width: 20px; height: 14px; border-radius: 50%;
+            border: 1px solid var(--yellow); flex-shrink: 0;
         }
 
         .admin-only { display: none; }
@@ -258,51 +368,132 @@
 </head>
 <body>
 
-<div id="moving-agent"></div>
-
-<!-- HEADER -->
+<!-- MAIN HEADER -->
 <div id="header">
-    <div class="title" onclick="secretHandshake()">DATAROOM</div>
-    <div style="display:flex; gap:8px; align-items:center;">
-        <span id="live-count" style="font-size:9px; letter-spacing:1px; opacity:0.4; font-family:monospace;"></span>
-        <button class="btn admin-only" onclick="toggleReg()">+ UPLOAD</button>
+    <div class="site-title" onclick="secretHandshake()">COMMONS ON DEMAND</div>
+    <div class="header-right">
+        <span class="live-count" id="live-count"></span>
+        <button class="btn admin-only" onclick="openUploadForm()">+ ADD MAKER</button>
         <button class="btn" onclick="toggleMode()">⬡</button>
     </div>
 </div>
 
-<!-- FLOATING CANVAS -->
+<!-- MAIN CANVAS — identity circles & ovals -->
 <div id="canvas"></div>
+
+<!-- LEGEND -->
+<div id="legend">
+    <div class="legend-item"><div class="legend-circle"></div> maker / artist</div>
+    <div class="legend-item"><div class="legend-oval"></div> curator / program</div>
+</div>
 
 <!-- BOTTOM BAR -->
 <div id="bottom-bar">
-    <div id="console-display">DATAROOM_24H // IDLE</div>
+    <div id="console-display">COMMONS_ON_DEMAND // 24H</div>
     <div class="db-controls">
         <span class="admin-only" onclick="exportData()">EXPORT</span>
         <span class="admin-only" onclick="importData()">IMPORT</span>
     </div>
 </div>
 
-<!-- REGISTRATION OVERLAY -->
-<div id="reg-section" onclick="handleBgClick(event)">
+<!-- ══════════════════════════════════════════════
+     CLUSTER VIEW (sub-canvas — opens on click)
+═══════════════════════════════════════════════ -->
+<div id="cluster-view">
+    <div id="cluster-header">
+        <div class="cluster-title-block">
+            <div class="cluster-maker-name" id="cluster-maker-name">—</div>
+            <div class="cluster-role" id="cluster-role">MAKER</div>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+            <span id="cluster-countdown" style="font-family:monospace; font-size:9px; opacity:0.4; letter-spacing:1px;"></span>
+            <button class="btn admin-only" id="cluster-upload-btn" onclick="openWorkForm()">+ UPLOAD WORK</button>
+            <button class="btn" onclick="closeCluster()">← COMMONS</button>
+        </div>
+    </div>
+    <div id="cluster-canvas"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     UPLOAD OVERLAY — add maker / curator
+═══════════════════════════════════════════════ -->
+<div id="reg-section" onclick="handleOverlayClick(event, 'reg-section')">
     <div class="form-container" onclick="event.stopPropagation()">
-        <div class="form-close" onclick="toggleReg()">×</div>
-        <h2 id="form-title" style="font-size:10px; text-transform:uppercase; margin-bottom:16px; letter-spacing:2px;">Upload Work — 24H</h2>
-        
+        <div class="form-close" onclick="closeUploadForm()">×</div>
+        <h2 id="form-title" style="font-size:10px; text-transform:uppercase; margin-bottom:16px; letter-spacing:2px;">Add to Commons — 24H</h2>
+
+        <form id="makerForm" class="grid-form">
+            <input type="hidden" id="editing-id">
+
+            <div style="grid-column:span 2;">
+                <label>Name</label>
+                <input type="text" id="maker-name" placeholder="Artist or curator name" required>
+            </div>
+
+            <div>
+                <label>Initials</label>
+                <input type="text" id="maker-initials" placeholder="KS" maxlength="3">
+            </div>
+
+            <div>
+                <label>Role</label>
+                <select id="maker-role">
+                    <option value="maker">Maker / Artist</option>
+                    <option value="curator">Curator / Program</option>
+                </select>
+            </div>
+
+            <div style="grid-column:span 2;">
+                <label>Payment link (PayPal.me / Venmo)</label>
+                <input type="text" id="maker-payment" placeholder="https://paypal.me/yourname">
+            </div>
+
+            <div style="grid-column:span 2;">
+                <label>Access code (optional)</label>
+                <div style="display:flex; gap:8px;">
+                    <input type="text" id="maker-access" placeholder="e.g. WAVE24" style="flex:1;">
+                    <button type="button" class="btn" onclick="generateCode('maker-access')" style="white-space:nowrap;">GENERATE</button>
+                </div>
+            </div>
+
+            <div style="grid-column:span 2;">
+                <label>Permanent member (contributed to Commons Fund)</label>
+                <select id="maker-permanent">
+                    <option value="false">No — active 24h only</option>
+                    <option value="true">Yes — stays on canvas</option>
+                </select>
+            </div>
+
+            <button type="submit" id="submit-btn" class="btn" style="grid-column:span 2; margin-top:8px; padding:10px; font-size:10px;">
+                COMMIT — 24H CLOCK STARTS NOW
+            </button>
+            <button type="button" class="btn" onclick="closeUploadForm()" style="grid-column:span 2; border:none; opacity:0.3; font-size:10px;">CANCEL</button>
+        </form>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     WORK UPLOAD OVERLAY — works inside a cluster
+═══════════════════════════════════════════════ -->
+<div id="work-section" onclick="handleOverlayClick(event, 'work-section')">
+    <div class="form-container" onclick="event.stopPropagation()">
+        <div class="form-close" onclick="closeWorkForm()">×</div>
+        <h2 id="work-form-title" style="font-size:10px; text-transform:uppercase; margin-bottom:16px; letter-spacing:2px;">Upload Work</h2>
+
         <div id="form-preview-container">
             <span style="font-size:9px; opacity:0.3; font-family:monospace;">PREVIEW</span>
         </div>
 
-        <form id="archiveForm" class="grid-form">
-            <input type="hidden" id="editing-id">
-            <input type="hidden" id="upload-time">
+        <form id="workForm" class="grid-form">
+            <input type="hidden" id="work-editing-id">
 
             <div>
                 <label>Year</label>
-                <input type="text" id="year" placeholder="2025" required>
+                <input type="text" id="work-year" placeholder="2025">
             </div>
             <div>
                 <label>Mode</label>
-                <select id="mode">
+                <select id="work-mode">
                     <option value="VIDEO">VIDEO</option>
                     <option value="PERFORMANCE">PERFORMANCE</option>
                     <option value="SOUND">SOUND</option>
@@ -313,46 +504,33 @@
 
             <div style="grid-column:span 2;">
                 <label>Title</label>
-                <input type="text" id="title" placeholder="Title of work" required>
+                <input type="text" id="work-title" placeholder="Title of work" required>
+            </div>
+
+            <textarea id="work-notes" placeholder="Notes / description (optional)"></textarea>
+
+            <div style="grid-column:span 2;">
+                <label>File URL (Backblaze / Dropbox)</label>
+                <input type="text" id="work-path" placeholder="https://...">
             </div>
 
             <div style="grid-column:span 2;">
-                <label>Artist</label>
-                <input type="text" id="artist" placeholder="Your name">
-            </div>
-
-            <textarea id="materials" placeholder="Notes / description (optional)"></textarea>
-
-            <div style="grid-column:span 2;">
-                <label>File path or URL</label>
-                <input type="text" id="manualPath" placeholder="media/video.mp4 or https://...">
+                <label>Link URL (for WWW works)</label>
+                <input type="text" id="work-link" placeholder="https://yourproject.com">
             </div>
 
             <div style="grid-column:span 2;">
-                <label>URL Link (for WWW entries)</label>
-                <input type="text" id="linkUrl" placeholder="https://yourproject.com">
-            </div>
-
-            <div style="grid-column:span 2;">
-                <label>Your payment link (PayPal.me / Venmo)</label>
-                <input type="text" id="paymentLink" placeholder="https://paypal.me/yourname">
-            </div>
-
-            <div style="grid-column:span 2;">
-                <label>Viewer access code</label>
+                <label>Viewer access code (optional)</label>
                 <div style="display:flex; gap:8px;">
-                    <input type="text" id="accessCode" placeholder="e.g. WAVE24" style="flex:1;">
-                    <button type="button" class="btn" onclick="generateCode()" style="white-space:nowrap;">GENERATE</button>
+                    <input type="text" id="work-access" placeholder="e.g. BLUE22" style="flex:1;">
+                    <button type="button" class="btn" onclick="generateCode('work-access')" style="white-space:nowrap;">GENERATE</button>
                 </div>
             </div>
 
-            <div style="grid-column:span 2;">
-                <label>Upload file (auto-fills path)</label>
-                <input type="file" id="mediaFile" style="border:none; padding:0; font-size:10px;" onchange="handleFileSelection(this)">
-            </div>
-
-            <button type="submit" id="submit-btn" class="btn" style="grid-column:span 2; margin-top:8px; padding:10px; font-size:10px;">COMMIT — 24H CLOCK STARTS NOW</button>
-            <button type="button" class="btn" onclick="toggleReg()" style="grid-column:span 2; border:none; opacity:0.3; font-size:10px;">CANCEL</button>
+            <button type="submit" class="btn" style="grid-column:span 2; margin-top:8px; padding:10px; font-size:10px;">
+                ADD WORK TO CLUSTER
+            </button>
+            <button type="button" class="btn" onclick="closeWorkForm()" style="grid-column:span 2; border:none; opacity:0.3; font-size:10px;">CANCEL</button>
         </form>
     </div>
 </div>
@@ -362,457 +540,700 @@
     <div class="view-controls">
         <div class="bg-toggle black" onclick="setViewBg('#000000')"></div>
         <div class="bg-toggle white" onclick="setViewBg('#ffffff')"></div>
-        <div class="bg-toggle grey" onclick="setViewBg('#888888')"></div>
+        <div class="bg-toggle grey"  onclick="setViewBg('#888888')"></div>
         <button class="close-btn" onclick="closeRoom()">CLOSE</button>
     </div>
     <div id="media-container"></div>
 </div>
 
 <!-- INVITE OVERLAY -->
-<div id="invite-overlay" onclick="closeInvite(event)">
+<div id="invite-overlay" onclick="handleOverlayClick(event, 'invite-overlay')">
     <div class="invite-box" onclick="event.stopPropagation()">
-        <div class="form-close" onclick="document.getElementById('invite-overlay').style.display='none'">×</div>
+        <div class="form-close" onclick="closeInvite()">×</div>
         <h3>Invite to Watch</h3>
         <div class="invite-msg" id="invite-text"></div>
         <div class="invite-actions">
             <button class="btn" onclick="copyInvite()">COPY</button>
             <button class="btn" onclick="emailInvite()">SEND BY EMAIL</button>
-            <button class="btn" onclick="document.getElementById('invite-overlay').style.display='none'">CLOSE</button>
+            <button class="btn" onclick="closeInvite()">CLOSE</button>
         </div>
     </div>
 </div>
 
 <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
 <script>
-    const STUDIO_CODE = 'studio';
-    const DATAROOM_URL = window.location.href.split('?')[0];
+// ══════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════
+const STUDIO_CODE = 'studio';
+const PLATFORM_URL = 'https://commons-on-demand.com';
 
-    let archive = [];
-    let vjsPlayer = null;
-    let activeWork = null;
-    let isAdmin = sessionStorage.getItem('dr_admin') === 'true';
-    let positions = {}; // store x,y per item id
-    let countdownTimers = {};
+let makers = [];          // identity objects (circles/ovals)
+let positions = {};       // x,y per maker id on main canvas
+let workPositions = {};   // x,y per work id inside cluster
+let countdownTimers = {}; // all running intervals
+let currentMaker = null;  // active cluster
+let activeWork = null;
+let vjsPlayer = null;
+let isAdmin = sessionStorage.getItem('cod_admin') === 'true';
 
-    /* ── INIT ── */
-    async function loadArchive() {
+if (isAdmin) document.body.classList.add('admin-active');
+
+// ══════════════════════════════════════════════════
+// LOAD / SAVE
+// ══════════════════════════════════════════════════
+async function loadData() {
+    try {
+        const res = await fetch('data.json?nc=' + Date.now());
+        if (res.ok) {
+            makers = await res.json();
+            localStorage.setItem('cod_makers', JSON.stringify(makers));
+            log('COMMONS_LOADED // ' + makers.length + ' MAKERS');
+        } else throw new Error();
+    } catch(e) {
         try {
-            const res = await fetch('data.json?nc=' + Date.now());
-            if (res.ok) {
-                archive = await res.json();
-                localStorage.setItem('dr_archive', JSON.stringify(archive));
-                log('ARCHIVE_LOADED // ' + archive.length + ' ENTRIES');
-            } else throw new Error();
-        } catch(e) {
-            try {
-                const s = localStorage.getItem('dr_archive');
-                if (s) { archive = JSON.parse(s); log('LOCAL_CACHE // ' + archive.length + ' ENTRIES'); }
-            } catch(err) {}
-        }
-        purgeExpired();
-        renderCanvas();
+            const s = localStorage.getItem('cod_makers');
+            if (s) { makers = JSON.parse(s); log('LOCAL_CACHE // ' + makers.length + ' MAKERS'); }
+        } catch(err) { makers = []; }
     }
+    purgeExpired();
+    renderMain();
+}
 
-    function purgeExpired() {
-        const now = Date.now();
-        const before = archive.length;
-        archive = archive.filter(item => {
-            if (!item.uploadTime) return true;
-            return (now - item.uploadTime) < 24 * 60 * 60 * 1000;
-        });
-        if (archive.length !== before) {
-            localStorage.setItem('dr_archive', JSON.stringify(archive));
+function saveLocal() {
+    localStorage.setItem('cod_makers', JSON.stringify(makers));
+}
+
+function purgeExpired() {
+    const now = Date.now();
+    makers = makers.map(m => {
+        if (!m.permanent && m.uploadTime && (now - m.uploadTime) >= 24 * 60 * 60 * 1000) {
+            return null; // remove fully
         }
-    }
-
-    if (isAdmin) document.body.classList.add('admin-active');
-
-    /* ── SHAPE GEOMETRY ── */
-    function shapeGeometry(mode) {
-        switch(mode) {
-            case 'VIDEO':       return { w: 280, h: 180, type: 'rect', cls: 'shape-video' };
-            case 'PERFORMANCE': return { w: 200, h: 200, type: 'circle', cls: 'shape-performance' };
-            case 'SOUND':       return { w: 120, h: 120, type: 'rect', cls: 'shape-sound' };
-            case 'WWW':         return { w: 340, h: 80,  type: 'rect', cls: 'shape-code' };
-            case 'IMAGE':       return { w: 220, h: 160, type: 'rect', cls: 'shape-image' };
-            default:            return { w: 200, h: 140, type: 'rect', cls: 'shape-image' };
+        // purge expired works inside cluster
+        if (m.works) {
+            m.works = m.works.filter(w => {
+                if (!w.uploadTime) return true;
+                return (now - w.uploadTime) < 24 * 60 * 60 * 1000;
+            });
         }
-    }
+        return m;
+    }).filter(Boolean);
+    saveLocal();
+}
 
-    /* ── RENDER ── */
-    function renderCanvas() {
-        const canvas = document.getElementById('canvas');
-        // Clear old timers
-        Object.values(countdownTimers).forEach(t => clearInterval(t));
-        countdownTimers = {};
-        canvas.innerHTML = '';
+// ══════════════════════════════════════════════════
+// MAIN CANVAS — identity circles & ovals
+// ══════════════════════════════════════════════════
+function renderMain() {
+    const canvas = document.getElementById('canvas');
 
-        const now = Date.now();
-        const active = archive.filter(item => {
-            if (!item.uploadTime) return true;
-            return (now - item.uploadTime) < 24 * 60 * 60 * 1000;
-        });
+    // clear old timers
+    Object.values(countdownTimers).forEach(t => clearInterval(t));
+    countdownTimers = {};
+    canvas.innerHTML = '';
 
-        document.getElementById('live-count').textContent = active.length + ' LIVE';
+    const now = Date.now();
+    const active = makers.filter(m => {
+        if (m.permanent) return true;
+        if (!m.uploadTime) return true;
+        return (now - m.uploadTime) < 24 * 60 * 60 * 1000;
+    });
 
-        active.forEach((item, i) => {
-            const geo = shapeGeometry(item.mode);
-            const wrap = document.createElement('div');
-            wrap.className = 'shape-wrap';
-            wrap.dataset.id = item.id;
+    document.getElementById('live-count').textContent =
+        active.filter(m => !m.permanent).length + ' LIVE';
 
-            /* Position: restore or randomize within safe bounds */
-            if (!positions[item.id]) {
-                const maxX = Math.max(50, window.innerWidth  - geo.w - 80);
-                const maxY = Math.max(80, window.innerHeight - geo.h - 80);
-                positions[item.id] = {
-                    x: 60 + (i * 137 + Math.floor(i * 0.7 * maxX)) % maxX,
-                    y: 60 + (i * 89  + Math.floor(i * 0.5 * maxY)) % maxY
-                };
-            }
-            const pos = positions[item.id];
-            wrap.style.left = pos.x + 'px';
-            wrap.style.top  = pos.y + 'px';
-            wrap.style.width  = geo.w + 'px';
-            wrap.style.height = geo.h + 'px';
+    active.forEach((maker, i) => {
+        const isCurator = maker.role === 'curator';
+        const w = isCurator ? 120 : 90;
+        const h = isCurator ? 72 : 90;
 
-            /* Shape element */
-            const shape = document.createElement('div');
-            shape.className = geo.cls;
-            shape.style.width = '100%';
-            shape.style.height = '100%';
-            shape.style.position = 'relative';
-            if (geo.type === 'circle') shape.style.borderRadius = '50%';
+        if (!positions[maker.id]) {
+            const maxX = Math.max(60, window.innerWidth  - w - 100);
+            const maxY = Math.max(80, window.innerHeight - h - 100);
+            positions[maker.id] = {
+                x: 80 + (i * 157 + Math.floor(i * 0.6 * maxX)) % maxX,
+                y: 80 + (i * 103 + Math.floor(i * 0.5 * maxY)) % maxY
+            };
+        }
+        const pos = positions[maker.id];
 
-            /* Label */
-            const label = document.createElement('div');
-            label.className = 'shape-label';
-            label.textContent = (item.artist ? item.artist + ' — ' : '') + item.title;
-            shape.appendChild(label);
+        const wrap = document.createElement('div');
+        wrap.className = 'identity-wrap';
+        wrap.style.left   = pos.x + 'px';
+        wrap.style.top    = pos.y  + 'px';
+        wrap.style.width  = w + 'px';
+        wrap.style.height = h + 'px';
+        wrap.dataset.id   = maker.id;
 
-            /* Countdown */
+        // Shape
+        const shape = document.createElement('div');
+        shape.className = isCurator
+            ? 'identity-oval' + (maker.permanent ? ' permanent' : '')
+            : 'identity-circle' + (maker.permanent ? ' permanent' : '');
+        shape.classList.add('identity-shape');
+
+        // Initials
+        const initials = document.createElement('div');
+        initials.className = 'identity-initials';
+        initials.textContent = maker.initials || getInitials(maker.name);
+        shape.appendChild(initials);
+
+        // Name below
+        const nameTag = document.createElement('div');
+        nameTag.className = 'identity-name';
+        nameTag.textContent = maker.name || '';
+        wrap.appendChild(nameTag);
+
+        // Countdown above (only for active 24h)
+        if (!maker.permanent && maker.uploadTime) {
             const cd = document.createElement('div');
-            cd.className = 'shape-countdown';
-            shape.appendChild(cd);
+            cd.className = 'identity-countdown';
+            wrap.appendChild(cd);
 
-            if (item.uploadTime) {
-                countdownTimers[item.id] = setInterval(() => {
-                    const remaining = (item.uploadTime + 24*60*60*1000) - Date.now();
-                    if (remaining <= 0) {
-                        clearInterval(countdownTimers[item.id]);
-                        cd.textContent = 'EXPIRED';
-                        wrap.classList.add('expired');
-                        return;
-                    }
-                    const h = Math.floor(remaining / 3600000);
-                    const m = Math.floor((remaining % 3600000) / 60000);
-                    const s = Math.floor((remaining % 60000) / 1000);
-                    cd.textContent = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-                    if (remaining < 3600000) cd.classList.add('urgent');
-                }, 1000);
-            }
+            countdownTimers[maker.id] = setInterval(() => {
+                const rem = (maker.uploadTime + 24*60*60*1000) - Date.now();
+                if (rem <= 0) {
+                    clearInterval(countdownTimers[maker.id]);
+                    wrap.remove();
+                    return;
+                }
+                const h2 = Math.floor(rem / 3600000);
+                const m2 = Math.floor((rem % 3600000) / 60000);
+                const s2 = Math.floor((rem % 60000) / 1000);
+                cd.textContent = pad(h2) + ':' + pad(m2) + ':' + pad(s2);
+                if (rem < 3600000) cd.classList.add('urgent');
+            }, 1000);
+        }
 
-            /* Invite button inside shape */
-            const inviteBtn = document.createElement('button');
-            inviteBtn.textContent = 'INVITE';
-            inviteBtn.style.cssText = 'position:absolute; bottom:10px; right:10px; background:none; border:none; font-size:8px; letter-spacing:1px; color:var(--accent); cursor:pointer; text-transform:uppercase; opacity:0.5; padding:2px 4px;';
-            inviteBtn.onmouseenter = () => inviteBtn.style.opacity = '1';
-            inviteBtn.onmouseleave = () => inviteBtn.style.opacity = '0.5';
-            inviteBtn.onclick = (e) => { e.stopPropagation(); showInvite(item); };
-            shape.appendChild(inviteBtn);
+        wrap.appendChild(shape);
 
-            /* Admin actions */
+        // Admin delete
+        if (isAdmin) {
+            const del = document.createElement('button');
+            del.textContent = '×';
+            del.style.cssText = 'position:absolute;top:-10px;right:-10px;background:none;border:none;color:#ff4444;font-size:14px;cursor:pointer;opacity:0;transition:0.2s;';
+            wrap.addEventListener('mouseenter', () => del.style.opacity = '0.8');
+            wrap.addEventListener('mouseleave', () => del.style.opacity = '0');
+            del.onclick = (e) => { e.stopPropagation(); deleteMaker(maker.id); };
+            wrap.appendChild(del);
+        }
+
+        // Click → open cluster
+        wrap.onclick = () => {
+            if (!maker.permanent) openCluster(maker);
+        };
+        if (maker.permanent) {
+            wrap.style.cursor = 'default';
+            wrap.title = maker.name + ' — commons member';
+        }
+
+        // Drag
+        makeDraggable(wrap, maker.id, positions);
+
+        canvas.appendChild(wrap);
+    });
+
+    log('COMMONS_ON_DEMAND // ' + active.filter(m => !m.permanent).length + ' LIVE');
+}
+
+// ══════════════════════════════════════════════════
+// CLUSTER VIEW
+// ══════════════════════════════════════════════════
+function openCluster(maker) {
+    currentMaker = maker;
+    document.getElementById('cluster-view').style.display = 'block';
+    document.getElementById('cluster-maker-name').textContent = maker.name || '—';
+    document.getElementById('cluster-role').textContent = maker.role === 'curator' ? 'CURATOR · PROGRAM' : 'MAKER · ARTIST';
+
+    // countdown
+    if (maker.uploadTime) {
+        const cdEl = document.getElementById('cluster-countdown');
+        if (countdownTimers['cluster']) clearInterval(countdownTimers['cluster']);
+        countdownTimers['cluster'] = setInterval(() => {
+            const rem = (maker.uploadTime + 24*60*60*1000) - Date.now();
+            if (rem <= 0) { cdEl.textContent = 'EXPIRED'; return; }
+            const h = Math.floor(rem / 3600000);
+            const m = Math.floor((rem % 3600000) / 60000);
+            const s = Math.floor((rem % 60000) / 1000);
+            cdEl.textContent = pad(h) + ':' + pad(m) + ':' + pad(s);
+            if (rem < 3600000) cdEl.style.color = '#ff4444';
+        }, 1000);
+    }
+
+    renderCluster(maker);
+}
+
+function closeCluster() {
+    document.getElementById('cluster-view').style.display = 'none';
+    if (countdownTimers['cluster']) clearInterval(countdownTimers['cluster']);
+    currentMaker = null;
+    renderMain(); // refresh main
+}
+
+function renderCluster(maker) {
+    const canvas = document.getElementById('cluster-canvas');
+    // clear work timers
+    Object.keys(countdownTimers).forEach(k => {
+        if (k.startsWith('w_')) { clearInterval(countdownTimers[k]); delete countdownTimers[k]; }
+    });
+    canvas.innerHTML = '';
+
+    const works = maker.works || [];
+
+    works.forEach((work, i) => {
+        const geo = workGeometry(work.mode);
+
+        if (!workPositions[work.id]) {
+            const maxX = Math.max(60, window.innerWidth  - geo.w - 80);
+            const maxY = Math.max(80, window.innerHeight - geo.h - 80);
+            workPositions[work.id] = {
+                x: 80 + (i * 173 + Math.floor(i * 0.65 * maxX)) % maxX,
+                y: 80 + (i * 107 + Math.floor(i * 0.55 * maxY)) % maxY
+            };
+        }
+        const pos = workPositions[work.id];
+
+        const wrap = document.createElement('div');
+        wrap.className = 'shape-wrap';
+        wrap.style.left   = pos.x + 'px';
+        wrap.style.top    = pos.y + 'px';
+        wrap.style.width  = geo.w + 'px';
+        wrap.style.height = geo.h + 'px';
+        wrap.dataset.id   = work.id;
+
+        const shape = document.createElement('div');
+        shape.className = geo.cls;
+        shape.style.width = '100%'; shape.style.height = '100%';
+
+        // Title — centered
+        const title = document.createElement('div');
+        title.className = 'shape-title';
+        title.textContent = work.title || 'UNTITLED';
+        shape.appendChild(title);
+
+        // Artist bottom-left (for curator clusters showing multiple artists)
+        if (work.artist) {
+            const art = document.createElement('div');
+            art.className = 'shape-artist';
+            art.textContent = work.artist;
+            shape.appendChild(art);
+        }
+
+        // Countdown top-right
+        const cd = document.createElement('div');
+        cd.className = 'shape-countdown';
+        shape.appendChild(cd);
+
+        if (work.uploadTime) {
+            countdownTimers['w_' + work.id] = setInterval(() => {
+                const rem = (work.uploadTime + 24*60*60*1000) - Date.now();
+                if (rem <= 0) {
+                    clearInterval(countdownTimers['w_' + work.id]);
+                    cd.textContent = 'EXPIRED';
+                    wrap.classList.add('expired');
+                    return;
+                }
+                const h = Math.floor(rem / 3600000);
+                const m = Math.floor((rem % 3600000) / 60000);
+                const s = Math.floor((rem % 60000) / 1000);
+                cd.textContent = pad(h) + ':' + pad(m) + ':' + pad(s);
+                if (rem < 3600000) cd.classList.add('urgent');
+            }, 1000);
+        }
+
+        // Invite btn
+        const invBtn = document.createElement('button');
+        invBtn.className = 'shape-invite-btn';
+        invBtn.textContent = 'INVITE';
+        invBtn.onclick = (e) => { e.stopPropagation(); showInvite(work, maker); };
+        shape.appendChild(invBtn);
+
+        // Admin actions
+        if (isAdmin) {
             const actions = document.createElement('div');
             actions.className = 'shape-actions';
             const editBtn = document.createElement('button');
             editBtn.className = 'shape-action-btn'; editBtn.textContent = '✎';
-            editBtn.onclick = (e) => { e.stopPropagation(); openEditForm(e, item.id); };
+            editBtn.onclick = (e) => { e.stopPropagation(); openEditWorkForm(work.id); };
             const delBtn = document.createElement('button');
             delBtn.className = 'shape-action-btn shape-del-btn'; delBtn.textContent = '×';
-            delBtn.onclick = (e) => { e.stopPropagation(); deleteWork(item.id); };
+            delBtn.onclick = (e) => { e.stopPropagation(); deleteWork(work.id); };
             actions.appendChild(editBtn); actions.appendChild(delBtn);
             shape.appendChild(actions);
-
-            wrap.appendChild(shape);
-
-            /* Click to watch */
-            wrap.onclick = () => activateWork(item);
-
-            /* Drag to reposition */
-            makeDraggable(wrap, item.id);
-
-            canvas.appendChild(wrap);
-        });
-
-        log('DATAROOM_24H // ' + active.length + ' LIVE');
-    }
-
-    /* ── DRAG SHAPES ── */
-    function makeDraggable(el, id) {
-        let dragging = false, startX, startY, origLeft, origTop;
-        el.addEventListener('mousedown', (e) => {
-            if (e.target.tagName === 'BUTTON') return;
-            dragging = true;
-            startX = e.clientX; startY = e.clientY;
-            origLeft = parseFloat(el.style.left); origTop = parseFloat(el.style.top);
-            e.preventDefault();
-        });
-        window.addEventListener('mousemove', (e) => {
-            if (!dragging) return;
-            const nx = origLeft + (e.clientX - startX);
-            const ny = origTop  + (e.clientY - startY);
-            el.style.left = nx + 'px'; el.style.top = ny + 'px';
-            positions[id] = { x: nx, y: ny };
-        });
-        window.addEventListener('mouseup', () => { dragging = false; });
-    }
-
-    /* ── ACTIVATE / WATCH ── */
-    function activateWork(item) {
-        if (item.accessCode && item.accessCode !== '') {
-            const pass = prompt('Enter access code to watch:');
-            if (!pass || pass.trim() !== item.accessCode.trim()) {
-                alert('INVALID_CODE // ACCESS_DENIED');
-                return;
-            }
-        }
-        openRoom(item);
-    }
-
-    function openRoom(item) {
-        const room = document.getElementById('viewing-room');
-        const container = document.getElementById('media-container');
-        if (vjsPlayer) { vjsPlayer.dispose(); vjsPlayer = null; }
-        container.innerHTML = '';
-        room.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-        activeWork = item;
-
-        if (item.mode === 'WWW' && item.linkUrl) {
-            window.open(item.linkUrl, '_blank');
-            closeRoom(); return;
         }
 
-        /* Strip query string before detecting extension */
-        const cleanPath = (item.manualPath || '').split('?')[0].toLowerCase();
-        const ext = cleanPath.split('.').pop();
-        const isVideo = ['mp4','mov','webm','avi','mkv','m4v','ogv'].includes(ext);
-        const isAudio = ['mp3','m4a','wav','ogg','aac'].includes(ext);
+        wrap.appendChild(shape);
+        wrap.onclick = () => activateWork(work, maker);
+        makeDraggable(wrap, work.id, workPositions);
+        canvas.appendChild(wrap);
+    });
+}
 
-        if (isVideo) {
-            const isDropbox = item.manualPath.includes('dropbox.com');
-            
-            if (isDropbox) {
-                /* Dropbox: convert to direct streaming URL and use iframe */
-                const streamUrl = item.manualPath
-                    .replace('www.dropbox.com', 'dl.dropboxusercontent.com')
-                    .replace('?dl=0', '')
-                    .replace('?dl=1', '')
-                    .replace('?raw=1', '')
-                    .split('?')[0]; /* strip all query params — dl.dropboxusercontent doesn't need them */
-                
-                const iframe = document.createElement('iframe');
-                iframe.src = streamUrl;
-                iframe.style.cssText = 'width:100%; height:100%; border:none;';
-                iframe.setAttribute('allowfullscreen', '');
-                iframe.setAttribute('allow', 'autoplay');
-                container.appendChild(iframe);
-            } else {
-                /* Native HTML5 for other sources */
-                const vidEl = document.createElement('video');
-                vidEl.setAttribute('controls', '');
-                vidEl.setAttribute('autoplay', '');
-                vidEl.setAttribute('playsinline', '');
-                vidEl.style.cssText = 'max-width:100%; max-height:100%; width:auto; height:auto;';
-                vidEl.src = item.manualPath;
-                vidEl.onerror = () => { container.innerHTML = '<div style="color:#fff;font-family:monospace;font-size:11px;text-align:center;">MEDIA NOT FOUND</div>'; };
-                container.appendChild(vidEl);
-                vidEl.play().catch(() => { vidEl.muted = true; vidEl.play(); });
-            }
-        } else if (isAudio) {
-            const wrap = document.createElement('div');
-            wrap.style.cssText = 'display:flex; flex-direction:column; align-items:center; gap:20px;';
-            const t = document.createElement('div');
-            t.style.cssText = 'color:#fff; font-family:monospace; font-size:12px; letter-spacing:2px; text-transform:uppercase;';
-            t.textContent = item.title;
-            const audio = document.createElement('audio');
-            audio.controls = true; audio.autoplay = true; audio.src = item.manualPath;
-            audio.style.cssText = 'width:380px; max-width:80vw;';
-            wrap.appendChild(t); wrap.appendChild(audio);
-            container.appendChild(wrap);
-        } else {
-            const img = document.createElement('img');
-            img.src = item.manualPath;
-            img.style.cssText = 'max-width:85%; max-height:85%; object-fit:contain;';
-            img.onerror = () => { container.innerHTML = '<div style="color:#fff;font-family:monospace;font-size:11px;">MEDIA NOT FOUND</div>'; };
-            container.appendChild(img);
-        }
+// ══════════════════════════════════════════════════
+// WORK GEOMETRY
+// ══════════════════════════════════════════════════
+function workGeometry(mode) {
+    switch(mode) {
+        case 'VIDEO':       return { w: 300, h: 190, cls: 'shape-video' };
+        case 'PERFORMANCE': return { w: 200, h: 200, cls: 'shape-performance' };
+        case 'SOUND':       return { w: 120, h: 120, cls: 'shape-sound' };
+        case 'WWW':         return { w: 360, h: 80,  cls: 'shape-code' };
+        case 'IMAGE':       return { w: 220, h: 165, cls: 'shape-image' };
+        default:            return { w: 200, h: 140, cls: 'shape-image' };
     }
+}
 
-    function closeRoom() {
-        if (vjsPlayer) { vjsPlayer.dispose(); vjsPlayer = null; }
-        document.getElementById('viewing-room').style.display = 'none';
-        document.getElementById('media-container').innerHTML = '';
-        document.body.style.overflow = 'hidden';
-        setViewBg('#000000');
-    }
-
-    function setViewBg(c) { document.getElementById('viewing-room').style.backgroundColor = c; }
-
-    /* ── INVITE ── */
-    function showInvite(item) {
-        const payLine = item.paymentLink ? `\nPay $10 to watch: ${item.paymentLink}` : '';
-        const codeLine = item.accessCode ? `\nAccess code (after payment): ${item.accessCode}` : '';
-        const msg = `You are invited to watch:\n\n"${item.title}"${item.artist ? ' by ' + item.artist : ''} (${item.year})\n\nAvailable for 24 hours only.\nDataroom: ${DATAROOM_URL}${payLine}${codeLine}`;
-        document.getElementById('invite-text').textContent = msg;
-        document.getElementById('invite-overlay').style.display = 'flex';
-        activeWork = item;
-    }
-
-    function closeInvite(e) {
-        if (e.target.id === 'invite-overlay') document.getElementById('invite-overlay').style.display = 'none';
-    }
-
-    function copyInvite() {
-        navigator.clipboard.writeText(document.getElementById('invite-text').textContent)
-            .then(() => log('INVITE_COPIED'));
-    }
-
-    function emailInvite() {
-        if (!activeWork) return;
-        const subject = encodeURIComponent('Invitation: ' + activeWork.title + ' — DATAROOM 24H');
-        const body = encodeURIComponent(document.getElementById('invite-text').textContent);
-        window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
-    }
-
-    /* ── FORM ── */
-    function toggleReg(reset = true) {
-        const s = document.getElementById('reg-section');
-        const hidden = s.style.display === 'none' || s.style.display === '';
-        if (reset && hidden) {
-            document.getElementById('archiveForm').reset();
-            document.getElementById('editing-id').value = '';
-            document.getElementById('form-title').textContent = 'Upload Work — 24H Clock Starts Now';
-            document.getElementById('submit-btn').textContent = 'COMMIT — 24H CLOCK STARTS NOW';
-            document.getElementById('form-preview-container').innerHTML = '<span style="font-size:9px;opacity:0.3;font-family:monospace;">PREVIEW</span>';
-        }
-        s.style.display = hidden ? 'flex' : 'none';
-    }
-
-    function handleBgClick(e) { if (e.target.id === 'reg-section') toggleReg(); }
-
-    function generateCode() {
-        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-        let code = '';
-        for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
-        document.getElementById('accessCode').value = code;
-    }
-
-    function handleFileSelection(input) {
-        const file = input.files[0]; if (!file) return;
-        document.getElementById('manualPath').value = 'media/' + file.name;
-        const container = document.getElementById('form-preview-container');
-        const src = URL.createObjectURL(file);
-        if (file.type.startsWith('video')) {
-            container.innerHTML = `<video src="${src}" muted preload="metadata" style="pointer-events:none;max-height:100%;"></video>`;
-        } else if (file.type.startsWith('audio')) {
-            container.innerHTML = `<div style="font-family:monospace;font-size:11px;opacity:0.5;">♪ ${file.name}</div>`;
-        } else {
-            container.innerHTML = `<img src="${src}" style="max-height:100%;max-width:100%;object-fit:contain;">`;
-        }
-    }
-
-    function openEditForm(e, id) {
-        e.stopPropagation();
-        const item = archive.find(i => String(i.id) === String(id)); if (!item) return;
-        document.getElementById('editing-id').value = item.id;
-        document.getElementById('year').value = item.year || '';
-        document.getElementById('title').value = item.title || '';
-        document.getElementById('mode').value = item.mode || 'VIDEO';
-        document.getElementById('artist').value = item.artist || '';
-        document.getElementById('materials').value = item.materials || '';
-        document.getElementById('manualPath').value = item.manualPath || '';
-        document.getElementById('linkUrl').value = item.linkUrl || '';
-        document.getElementById('paymentLink').value = item.paymentLink || '';
-        document.getElementById('accessCode').value = item.accessCode || '';
-        document.getElementById('form-title').textContent = 'Edit Entry';
-        document.getElementById('submit-btn').textContent = 'UPDATE';
-        toggleReg(false);
-    }
-
-    document.getElementById('archiveForm').onsubmit = function(e) {
+// ══════════════════════════════════════════════════
+// DRAG
+// ══════════════════════════════════════════════════
+function makeDraggable(el, id, posStore) {
+    let dragging = false, startX, startY, origLeft, origTop, moved = false;
+    el.addEventListener('mousedown', (e) => {
+        if (e.target.tagName === 'BUTTON') return;
+        dragging = true; moved = false;
+        startX = e.clientX; startY = e.clientY;
+        origLeft = parseFloat(el.style.left); origTop = parseFloat(el.style.top);
         e.preventDefault();
-        const editingId = document.getElementById('editing-id').value;
-        const entryData = {
-            year:        document.getElementById('year').value,
-            mode:        document.getElementById('mode').value,
-            title:       document.getElementById('title').value.trim() || 'UNTITLED',
-            artist:      document.getElementById('artist').value.trim(),
-            materials:   document.getElementById('materials').value,
-            manualPath:  document.getElementById('manualPath').value.trim(),
-            linkUrl:     document.getElementById('linkUrl').value.trim(),
-            paymentLink: document.getElementById('paymentLink').value.trim(),
-            accessCode:  document.getElementById('accessCode').value.trim(),
-            uploadTime:  editingId ? (archive.find(i=>String(i.id)===String(editingId))?.uploadTime || Date.now()) : Date.now()
-        };
-        if (editingId) {
-            const idx = archive.findIndex(i => String(i.id) === String(editingId));
-            archive[idx] = { ...archive[idx], ...entryData, id: editingId };
-        } else {
-            entryData.id = String(Date.now() + Math.random());
-            archive.push(entryData);
+    });
+    window.addEventListener('mousemove', (e) => {
+        if (!dragging) return;
+        const dx = e.clientX - startX, dy = e.clientY - startY;
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
+        const nx = origLeft + dx, ny = origTop + dy;
+        el.style.left = nx + 'px'; el.style.top = ny + 'px';
+        posStore[id] = { x: nx, y: ny };
+    });
+    window.addEventListener('mouseup', () => {
+        if (dragging && moved) el._dragged = true;
+        else el._dragged = false;
+        dragging = false;
+    });
+    el.addEventListener('click', (e) => {
+        if (el._dragged) { el._dragged = false; e.stopPropagation(); }
+    }, true);
+}
+
+// ══════════════════════════════════════════════════
+// ACTIVATE WORK (access code gate → viewing room)
+// ══════════════════════════════════════════════════
+function activateWork(work, maker) {
+    if (work.accessCode && work.accessCode !== '') {
+        const pass = prompt('Enter access code to watch:');
+        if (!pass || pass.trim() !== work.accessCode.trim()) {
+            alert('INVALID CODE — ACCESS DENIED');
+            return;
         }
-        localStorage.setItem('dr_archive', JSON.stringify(archive));
-        toggleReg();
-        renderCanvas();
+    }
+    openRoom(work, maker);
+}
+
+function openRoom(work, maker) {
+    const room = document.getElementById('viewing-room');
+    const container = document.getElementById('media-container');
+    if (vjsPlayer) { vjsPlayer.dispose(); vjsPlayer = null; }
+    container.innerHTML = '';
+    room.style.display = 'flex';
+    activeWork = work;
+
+    if (work.mode === 'WWW' && work.linkUrl) {
+        window.open(work.linkUrl, '_blank');
+        closeRoom(); return;
+    }
+
+    const cleanPath = (work.manualPath || '').split('?')[0].toLowerCase();
+    const ext = cleanPath.split('.').pop();
+    const isVideo = ['mp4','mov','webm','avi','mkv','m4v','ogv'].includes(ext);
+    const isAudio = ['mp3','m4a','wav','ogg','aac'].includes(ext);
+
+    if (isVideo) {
+        const isDropbox = (work.manualPath || '').includes('dropbox.com');
+        const isBackblaze = (work.manualPath || '').includes('backblazeb2.com') || (work.manualPath || '').includes('backblaze');
+
+        if (isDropbox) {
+            const streamUrl = work.manualPath
+                .replace('www.dropbox.com', 'dl.dropboxusercontent.com')
+                .split('?')[0];
+            const iframe = document.createElement('iframe');
+            iframe.src = streamUrl;
+            iframe.style.cssText = 'width:100%; height:100%; border:none;';
+            iframe.setAttribute('allowfullscreen', '');
+            container.appendChild(iframe);
+        } else {
+            // Backblaze via Cloudflare or direct
+            const vid = document.createElement('video');
+            vid.setAttribute('controls', '');
+            vid.setAttribute('autoplay', '');
+            vid.setAttribute('playsinline', '');
+            vid.style.cssText = 'max-width:100%; max-height:100%; width:auto; height:auto;';
+            vid.src = work.manualPath;
+            vid.onerror = () => {
+                container.innerHTML = '<div style="color:#fff;font-family:monospace;font-size:11px;text-align:center;opacity:0.5;">MEDIA NOT FOUND</div>';
+            };
+            container.appendChild(vid);
+            vid.play().catch(() => { vid.muted = true; vid.play(); });
+        }
+    } else if (isAudio) {
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:20px;';
+        const t = document.createElement('div');
+        t.style.cssText = 'color:#fff;font-family:monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:0.6;';
+        t.textContent = work.title;
+        const audio = document.createElement('audio');
+        audio.controls = true; audio.autoplay = true;
+        audio.src = work.manualPath;
+        audio.style.cssText = 'width:360px;max-width:80vw;';
+        wrap.appendChild(t); wrap.appendChild(audio);
+        container.appendChild(wrap);
+    } else {
+        const img = document.createElement('img');
+        img.src = work.manualPath;
+        img.style.cssText = 'max-width:85%;max-height:85%;object-fit:contain;';
+        img.onerror = () => {
+            container.innerHTML = '<div style="color:#fff;font-family:monospace;font-size:11px;opacity:0.5;">MEDIA NOT FOUND</div>';
+        };
+        container.appendChild(img);
+    }
+}
+
+function closeRoom() {
+    if (vjsPlayer) { vjsPlayer.dispose(); vjsPlayer = null; }
+    document.getElementById('viewing-room').style.display = 'none';
+    document.getElementById('media-container').innerHTML = '';
+    setViewBg('#000000');
+}
+
+function setViewBg(c) { document.getElementById('viewing-room').style.backgroundColor = c; }
+
+// ══════════════════════════════════════════════════
+// MAKER FORM (main canvas identity)
+// ══════════════════════════════════════════════════
+function openUploadForm() {
+    document.getElementById('makerForm').reset();
+    document.getElementById('editing-id').value = '';
+    document.getElementById('form-title').textContent = 'Add to Commons — 24H';
+    document.getElementById('submit-btn').textContent = 'COMMIT — 24H CLOCK STARTS NOW';
+    document.getElementById('reg-section').style.display = 'flex';
+}
+
+function closeUploadForm() {
+    document.getElementById('reg-section').style.display = 'none';
+}
+
+document.getElementById('makerForm').onsubmit = function(e) {
+    e.preventDefault();
+    const editingId = document.getElementById('editing-id').value;
+    const data = {
+        name:       document.getElementById('maker-name').value.trim(),
+        initials:   document.getElementById('maker-initials').value.trim().toUpperCase(),
+        role:       document.getElementById('maker-role').value,
+        payment:    document.getElementById('maker-payment').value.trim(),
+        accessCode: document.getElementById('maker-access').value.trim(),
+        permanent:  document.getElementById('maker-permanent').value === 'true',
+        uploadTime: editingId
+            ? (makers.find(m => String(m.id) === String(editingId))?.uploadTime || Date.now())
+            : Date.now(),
+        works: editingId
+            ? (makers.find(m => String(m.id) === String(editingId))?.works || [])
+            : []
+    };
+    if (!data.initials) data.initials = getInitials(data.name);
+
+    if (editingId) {
+        const idx = makers.findIndex(m => String(m.id) === String(editingId));
+        makers[idx] = { ...makers[idx], ...data, id: editingId };
+    } else {
+        data.id = String(Date.now() + Math.random());
+        makers.push(data);
+    }
+    saveLocal();
+    closeUploadForm();
+    renderMain();
+};
+
+function deleteMaker(id) {
+    if (!confirm('Remove this maker from the commons?')) return;
+    makers = makers.filter(m => String(m.id) !== String(id));
+    delete positions[id];
+    saveLocal();
+    renderMain();
+}
+
+// ══════════════════════════════════════════════════
+// WORK FORM (inside cluster)
+// ══════════════════════════════════════════════════
+function openWorkForm() {
+    if (!currentMaker) return;
+    document.getElementById('workForm').reset();
+    document.getElementById('work-editing-id').value = '';
+    document.getElementById('work-form-title').textContent = 'Upload Work to ' + currentMaker.name;
+    document.getElementById('form-preview-container').innerHTML =
+        '<span style="font-size:9px;opacity:0.3;font-family:monospace;">PREVIEW</span>';
+    document.getElementById('work-section').style.display = 'flex';
+}
+
+function closeWorkForm() {
+    document.getElementById('work-section').style.display = 'none';
+}
+
+function openEditWorkForm(workId) {
+    if (!currentMaker) return;
+    const work = (currentMaker.works || []).find(w => String(w.id) === String(workId));
+    if (!work) return;
+    document.getElementById('work-editing-id').value = work.id;
+    document.getElementById('work-year').value   = work.year || '';
+    document.getElementById('work-mode').value   = work.mode || 'VIDEO';
+    document.getElementById('work-title').value  = work.title || '';
+    document.getElementById('work-notes').value  = work.notes || '';
+    document.getElementById('work-path').value   = work.manualPath || '';
+    document.getElementById('work-link').value   = work.linkUrl || '';
+    document.getElementById('work-access').value = work.accessCode || '';
+    document.getElementById('work-form-title').textContent = 'Edit Work';
+    document.getElementById('work-section').style.display = 'flex';
+}
+
+document.getElementById('workForm').onsubmit = function(e) {
+    e.preventDefault();
+    if (!currentMaker) return;
+    const editingId = document.getElementById('work-editing-id').value;
+    const data = {
+        year:       document.getElementById('work-year').value.trim(),
+        mode:       document.getElementById('work-mode').value,
+        title:      document.getElementById('work-title').value.trim() || 'UNTITLED',
+        artist:     currentMaker.name,
+        notes:      document.getElementById('work-notes').value.trim(),
+        manualPath: document.getElementById('work-path').value.trim(),
+        linkUrl:    document.getElementById('work-link').value.trim(),
+        accessCode: document.getElementById('work-access').value.trim(),
+        uploadTime: editingId
+            ? ((currentMaker.works||[]).find(w=>String(w.id)===String(editingId))?.uploadTime || Date.now())
+            : Date.now()
     };
 
-    function deleteWork(id) {
-        archive = archive.filter(i => String(i.id) !== String(id));
-        delete positions[id];
-        localStorage.setItem('dr_archive', JSON.stringify(archive));
-        renderCanvas();
+    if (!currentMaker.works) currentMaker.works = [];
+
+    if (editingId) {
+        const idx = currentMaker.works.findIndex(w => String(w.id) === String(editingId));
+        currentMaker.works[idx] = { ...currentMaker.works[idx], ...data, id: editingId };
+    } else {
+        data.id = String(Date.now() + Math.random());
+        currentMaker.works.push(data);
     }
 
-    /* ── ADMIN ── */
-    function secretHandshake() {
-        const entry = prompt('Studio access code:');
-        if (!entry) return;
-        if (entry.trim().toLowerCase() === STUDIO_CODE) {
-            isAdmin = true;
-            sessionStorage.setItem('dr_admin', 'true');
-            document.body.classList.add('admin-active');
-        } else {
-            isAdmin = false;
-            sessionStorage.removeItem('dr_admin');
-            document.body.classList.remove('admin-active');
-        }
-        renderCanvas();
+    // sync back to makers array
+    const mIdx = makers.findIndex(m => String(m.id) === String(currentMaker.id));
+    if (mIdx >= 0) makers[mIdx] = currentMaker;
+    saveLocal();
+    closeWorkForm();
+    renderCluster(currentMaker);
+};
+
+function deleteWork(workId) {
+    if (!currentMaker) return;
+    currentMaker.works = (currentMaker.works || []).filter(w => String(w.id) !== String(workId));
+    delete workPositions[workId];
+    const mIdx = makers.findIndex(m => String(m.id) === String(currentMaker.id));
+    if (mIdx >= 0) makers[mIdx] = currentMaker;
+    saveLocal();
+    renderCluster(currentMaker);
+}
+
+// ══════════════════════════════════════════════════
+// INVITE
+// ══════════════════════════════════════════════════
+function showInvite(work, maker) {
+    const payLine  = maker.payment   ? `\nPay to watch: ${maker.payment}` : '';
+    const codeLine = work.accessCode ? `\nAccess code: ${work.accessCode}` : '';
+    const msg = `You are invited to watch:\n\n"${work.title}" (${work.year || ''})\n${maker.name}\n\nAvailable for 24 hours only.\n${PLATFORM_URL}${payLine}${codeLine}`;
+    document.getElementById('invite-text').textContent = msg;
+    document.getElementById('invite-overlay').style.display = 'flex';
+    activeWork = work;
+}
+
+function closeInvite() {
+    document.getElementById('invite-overlay').style.display = 'none';
+}
+
+function copyInvite() {
+    navigator.clipboard.writeText(document.getElementById('invite-text').textContent)
+        .then(() => log('INVITE_COPIED'));
+}
+
+function emailInvite() {
+    if (!activeWork) return;
+    const sub  = encodeURIComponent('Invitation: ' + activeWork.title + ' — COMMONS ON DEMAND 24H');
+    const body = encodeURIComponent(document.getElementById('invite-text').textContent);
+    window.location.href = 'mailto:?subject=' + sub + '&body=' + body;
+}
+
+// ══════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════
+function handleOverlayClick(e, id) {
+    if (e.target.id === id) document.getElementById(id).style.display = 'none';
+}
+
+function generateCode(fieldId) {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+    document.getElementById(fieldId).value = code;
+}
+
+function getInitials(name) {
+    if (!name) return '?';
+    return name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 3);
+}
+
+function pad(n) { return String(n).padStart(2, '0'); }
+
+function toggleMode() { document.body.classList.toggle('light-mode'); }
+
+function log(msg) { document.getElementById('console-display').textContent = msg; }
+
+// ══════════════════════════════════════════════════
+// ADMIN
+// ══════════════════════════════════════════════════
+function secretHandshake() {
+    const entry = prompt('Access code:');
+    if (!entry) return;
+    if (entry.trim().toLowerCase() === STUDIO_CODE) {
+        isAdmin = true;
+        sessionStorage.setItem('cod_admin', 'true');
+        document.body.classList.add('admin-active');
+        log('ADMIN_MODE // ACTIVE');
+    } else {
+        isAdmin = false;
+        sessionStorage.removeItem('cod_admin');
+        document.body.classList.remove('admin-active');
     }
+    renderMain();
+    if (currentMaker) renderCluster(currentMaker);
+}
 
-    function toggleMode() {
-        document.body.classList.toggle('light-mode');
-    }
+function exportData() {
+    const s = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(makers, null, 2));
+    const a = document.createElement('a'); a.href = s; a.download = 'data.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    log('EXPORT_COMPLETE');
+}
 
-    /* ── EXPORT / IMPORT ── */
-    function exportData() {
-        const s = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(archive, null, 2));
-        const a = document.createElement('a'); a.href = s; a.download = 'data.json';
-        document.body.appendChild(a); a.click(); a.remove();
-        log('EXPORT_COMPLETE');
-    }
+function importData() {
+    const input = document.createElement('input'); input.type = 'file'; input.accept = '.json';
+    input.onchange = e => {
+        const r = new FileReader(); r.readAsText(e.target.files[0]);
+        r.onload = re => {
+            try {
+                makers = JSON.parse(re.target.result);
+                saveLocal(); renderMain();
+                log('IMPORT_COMPLETE // ' + makers.length + ' MAKERS');
+            } catch(err) { log('IMPORT_ERROR'); }
+        };
+    }; input.click();
+}
 
-    function importData() {
-        const input = document.createElement('input'); input.type = 'file';
-        input.onchange = e => {
-            const r = new FileReader(); r.readAsText(e.target.files[0]);
-            r.onload = re => { try { archive = JSON.parse(re.target.result); localStorage.setItem('dr_archive', JSON.stringify(archive)); renderCanvas(); } catch(err) {} };
-        }; input.click();
-    }
-
-    function log(msg) { document.getElementById('console-display').textContent = msg; }
-
-    loadArchive();
+// ── START ──
+loadData();
 </script>
 </body>
 </html>
