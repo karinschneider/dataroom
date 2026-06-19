@@ -66,10 +66,9 @@
             overflow: hidden;
         }
 
-        /* ── IDENTITY SHAPES (maker circles, curator ovals) ── */
+        /* IDENTITY SHAPES */
         .identity-wrap {
-            position: absolute; cursor: pointer;
-            user-select: none;
+            position: absolute; cursor: pointer; user-select: none;
         }
         .identity-shape {
             width: 100%; height: 100%;
@@ -77,18 +76,8 @@
             transition: opacity 0.2s;
         }
         .identity-shape:hover { opacity: 0.7; }
-
-        .identity-circle {
-            border-radius: 50%;
-            border: 1px solid var(--pink);
-        }
-        .identity-oval {
-            border-radius: 50%;
-            border: 1px solid var(--yellow);
-        }
-        .identity-circle.permanent { border-color: #444; opacity: 0.3; }
-        .identity-oval.permanent   { border-color: #444; opacity: 0.3; }
-
+        .identity-circle { border-radius: 50%; border: 1px solid var(--pink); }
+        .identity-oval   { border-radius: 50%; border: 1px solid var(--yellow); }
         .identity-initials {
             font-size: 10px; font-weight: bold; letter-spacing: 2px;
             text-transform: uppercase; color: var(--text); opacity: 0.85;
@@ -110,25 +99,21 @@
         }
         .identity-cd.urgent { color: #ff4444; opacity: 1; }
 
-        /* ── WORK SHAPES ── */
+        /* WORK SHAPES */
         .shape-wrap {
-            position: absolute;
-            cursor: pointer;
-            transition: opacity 0.3s;
+            position: absolute; cursor: pointer; transition: opacity 0.3s;
         }
         .shape-wrap:hover { opacity: 0.75; }
         .shape-wrap.expired { opacity: 0.2; pointer-events: none; }
 
-        .shape-video       { border: 1px solid var(--pink);   background: transparent; position: relative; }
-        .shape-performance { border: 1px solid var(--pink);   border-radius: 50%; background: transparent; position: relative; }
-        .shape-sound       { border: 1px solid var(--grey);   background: transparent; position: relative; }
-        .shape-code        { border: 1px solid var(--pink);   background: transparent; position: relative; }
-        .shape-image       { border: 1px solid var(--grey);   background: transparent; position: relative; }
+        .shape-video       { border: 1px solid var(--pink);  background: transparent; position: relative; }
+        .shape-performance { border: 1px solid var(--pink);  border-radius: 50%; background: transparent; position: relative; }
+        .shape-sound       { border: 1px solid var(--grey);  background: transparent; position: relative; }
+        .shape-code        { border: 1px solid var(--pink);  background: transparent; position: relative; }
+        .shape-image       { border: 1px solid var(--grey);  background: transparent; position: relative; }
 
-        /* Title CENTERED in shape */
         .shape-title {
-            position: absolute;
-            top: 50%; left: 50%;
+            position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
             color: var(--text); opacity: 0.55;
@@ -136,67 +121,30 @@
             width: calc(100% - 20px);
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-
         .shape-label {
-            position: absolute;
-            bottom: 10px; left: 12px;
+            position: absolute; bottom: 10px; left: 12px;
             font-size: 8px; letter-spacing: 1px; text-transform: uppercase;
             color: var(--accent); opacity: 0.4;
             pointer-events: none;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
             max-width: calc(100% - 80px);
         }
-
         .shape-countdown {
-            position: absolute;
-            top: 10px; right: 10px;
+            position: absolute; top: 10px; right: 10px;
             font-size: 8px; letter-spacing: 1px;
-            color: var(--accent); opacity: 0.5;
-            font-family: monospace;
-            pointer-events: none;
+            color: var(--accent); opacity: 0.6;
+            font-family: monospace; pointer-events: none;
         }
         .shape-countdown.urgent { color: #ff4444; opacity: 1; }
 
-        /* Admin edit/delete */
         .shape-actions { position: absolute; top: 8px; left: 8px; display: none; gap: 6px; }
         body.admin-active .shape-actions { display: flex; }
         .shape-action-btn {
             font-size: 13px; cursor: pointer; opacity: 0.4;
-            color: var(--text); transition: 0.2s;
-            background: none; border: none; padding: 0;
+            color: var(--text); transition: 0.2s; background: none; border: none; padding: 0;
         }
         .shape-action-btn:hover { opacity: 1; }
         .shape-del-btn:hover { color: #ff0000; }
-
-        /* BOTTOM BAR */
-        #bottom-bar {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            padding: 14px 30px;
-            display: flex; justify-content: space-between; align-items: center;
-            z-index: 100;
-            font-family: monospace; font-size: 9px;
-            color: var(--accent);
-            pointer-events: none;
-        }
-        #bottom-bar > * { pointer-events: auto; }
-        #console-display { opacity: 0.4; }
-        .db-controls { display: flex; gap: 20px; }
-        .db-controls span { cursor: pointer; opacity: 0.4; transition: 0.2s; }
-        .db-controls span:hover { opacity: 1; }
-
-        /* LEGEND */
-        #legend {
-            position: fixed; bottom: 38px; right: 30px;
-            display: flex; flex-direction: column; gap: 8px;
-            z-index: 100; pointer-events: none;
-        }
-        .legend-item {
-            display: flex; align-items: center; gap: 8px;
-            font-size: 8px; letter-spacing: 1px; text-transform: uppercase;
-            color: var(--accent); opacity: 0.3;
-        }
-        .leg-circle { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--pink); flex-shrink: 0; }
-        .leg-oval   { width: 18px; height: 12px; border-radius: 50%; border: 1px solid var(--yellow); flex-shrink: 0; }
 
         /* CLUSTER VIEW */
         #cluster-view {
@@ -204,17 +152,49 @@
             background: var(--bg); z-index: 200; display: none; overflow: hidden;
         }
         #cluster-header {
-            position: fixed; top: 0; left: 0; right: 0;
-            padding: 20px 30px;
+            position: fixed; top: 0; left: 0; right: 0; padding: 20px 30px;
             display: flex; justify-content: space-between; align-items: center;
             z-index: 300; pointer-events: none;
         }
         #cluster-header > * { pointer-events: auto; }
-        .cluster-name { font-size: 11px; font-weight: bold; letter-spacing: 3px; text-transform: uppercase; color: var(--text); }
-        .cluster-role { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); opacity: 0.4; margin-top: 2px; }
         #cluster-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; overflow: hidden; }
+        .cluster-maker-name { font-size: 11px; font-weight: bold; letter-spacing: 3px; text-transform: uppercase; }
+        .cluster-role-label { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); opacity: 0.4; margin-top: 3px; }
 
-        /* REGISTRATION OVERLAY */
+        /* BOTTOM BAR */
+        #bottom-bar {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            padding: 14px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100; font-family: monospace; font-size: 9px; color: var(--accent);
+            pointer-events: none;
+        }
+        #bottom-bar > * { pointer-events: auto; }
+        #console-display { opacity: 0.5; }
+        .db-controls { display: flex; gap: 20px; }
+        .db-controls span { cursor: pointer; opacity: 0.4; transition: 0.2s; }
+        .db-controls span:hover { opacity: 1; }
+
+        /* LEGEND */
+        #legend {
+            position: fixed; bottom: 36px; right: 30px;
+            display: flex; flex-direction: column; gap: 8px;
+            z-index: 100; pointer-events: none;
+        }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 8px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); opacity: 0.3; }
+        .leg-circle  { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--pink); flex-shrink: 0; }
+        .leg-oval    { width: 18px; height: 11px; border-radius: 50%; border: 1px solid var(--yellow); flex-shrink: 0; }
+
+        /* PROFILE OVERLAY */
+        #profile-section { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.92); z-index: 5000;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(8px);
+        }
+        body.light-mode #profile-section { background: rgba(255,255,255,0.92); }
+
+        /* WORK UPLOAD OVERLAY */
         #reg-section { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.92); z-index: 5000;
@@ -259,10 +239,9 @@
         }
         #media-container { 
             width: 100%; height: 100%; display: flex; 
-            justify-content: center; align-items: center; 
-            padding: 80px; 
+            justify-content: center; align-items: center; padding: 80px; 
         }
-
+        .video-js { width: 100% !important; height: 100% !important; }
         .view-controls { 
             position: absolute; top: 24px; right: 24px; z-index: 7000; 
             display: flex; gap: 8px; align-items: center; 
@@ -270,7 +249,7 @@
         .bg-toggle { width: 16px; height: 16px; border: 1px solid rgba(128,128,128,0.4); cursor: pointer; transition: 0.2s; }
         .bg-toggle.black { background: #000; }
         .bg-toggle.white { background: #fff; }
-        .bg-toggle.grey { background: #888; }
+        .bg-toggle.grey  { background: #888; }
         .bg-toggle:hover { transform: scale(1.2); }
         .close-btn { 
             background: var(--text); color: var(--bg); border: none; 
@@ -310,8 +289,9 @@
     <div class="title" onclick="secretHandshake()">COMMONS ON DEMAND</div>
     <div style="display:flex; gap:8px; align-items:center;">
         <span id="live-count" style="font-size:9px; letter-spacing:1px; opacity:0.4; font-family:monospace;"></span>
+        <button class="btn admin-only" onclick="openProfileForm()">+ CREATE PROFILE</button>
         <button class="btn admin-only" onclick="toggleReg()">+ UPLOAD</button>
-        <button class="btn" onclick="toggleMode()">⬡</button>
+        <button class="btn" onclick="toggleMode()">◐</button>
     </div>
 </div>
 
@@ -337,91 +317,74 @@
 <div id="cluster-view">
     <div id="cluster-header">
         <div>
-            <div class="cluster-name" id="cluster-name-display">—</div>
-            <div class="cluster-role" id="cluster-role-display">MAKER</div>
+            <div class="cluster-maker-name" id="cluster-name-display">—</div>
+            <div class="cluster-role-label" id="cluster-role-display">MAKER</div>
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
-            <span id="cluster-cd" style="font-family:monospace; font-size:9px; opacity:0.4; letter-spacing:1px;"></span>
-            <button class="btn admin-only" onclick="toggleWorkReg()">+ UPLOAD</button>
+            <span id="cluster-cd" style="font-family:monospace;font-size:9px;opacity:0.4;letter-spacing:1px;"></span>
+            <button class="btn admin-only" onclick="toggleReg()">+ UPLOAD</button>
             <button class="btn" onclick="closeCluster()">← COMMONS</button>
         </div>
     </div>
     <div id="cluster-canvas"></div>
 </div>
 
-<!-- REGISTRATION OVERLAY — add maker/curator to main canvas -->
-<div id="reg-section" onclick="if(event.target.id==='reg-section')toggleReg()">
+<!-- PROFILE OVERLAY -->
+<div id="profile-section" onclick="if(event.target.id==='profile-section')closeProfileForm()">
     <div class="form-container" onclick="event.stopPropagation()">
-        <div class="form-close" onclick="toggleReg()">×</div>
-        <h2 id="form-title" style="font-size:10px; text-transform:uppercase; margin-bottom:16px; letter-spacing:2px;">Add to Commons — 24H</h2>
-        <form id="makerForm" class="grid-form">
-            <input type="hidden" id="editing-id">
-
+        <div class="form-close" onclick="closeProfileForm()">×</div>
+        <h2 id="profile-form-title" style="font-size:10px;text-transform:uppercase;margin-bottom:16px;letter-spacing:2px;">Create Profile</h2>
+        <form id="profileForm" class="grid-form">
+            <input type="hidden" id="profile-editing-id">
             <div style="grid-column:span 2;">
                 <label>Name</label>
-                <input type="text" id="maker-name" placeholder="Artist or curator name" required>
+                <input type="text" id="profile-name" placeholder="Your name" required>
             </div>
             <div>
                 <label>Initials</label>
-                <input type="text" id="maker-initials" placeholder="KS" maxlength="3">
+                <input type="text" id="profile-initials" placeholder="KS" maxlength="3">
             </div>
             <div>
                 <label>Role</label>
-                <select id="maker-role">
+                <select id="profile-role">
                     <option value="maker">Maker / Artist</option>
                     <option value="curator">Curator / Program</option>
                 </select>
             </div>
             <div style="grid-column:span 2;">
-                <label>Payment link (PayPal.me / Venmo)</label>
-                <input type="text" id="maker-payment" placeholder="https://paypal.me/yourname">
-            </div>
-            <div style="grid-column:span 2;">
-                <label>Access code (optional — viewers enter to enter cluster)</label>
+                <label>Access code (optional — viewers enter to enter your cluster)</label>
                 <div style="display:flex; gap:8px;">
-                    <input type="text" id="maker-access" placeholder="e.g. WAVE24" style="flex:1;">
-                    <button type="button" class="btn" onclick="generateCode('maker-access')" style="white-space:nowrap;">GENERATE</button>
+                    <input type="text" id="profile-access" placeholder="e.g. WAVE24" style="flex:1;">
+                    <button type="button" class="btn" onclick="generateCode('profile-access')" style="white-space:nowrap;">GENERATE</button>
                 </div>
             </div>
-            <div style="grid-column:span 2;">
-                <label>Permanent commons member</label>
-                <select id="maker-permanent">
-                    <option value="false">No — active 24h only</option>
-                    <option value="true">Yes — stays on canvas (contributed to commons fund)</option>
-                </select>
-            </div>
-            <button type="submit" id="submit-btn" class="btn" style="grid-column:span 2; margin-top:8px; padding:10px; font-size:10px;">COMMIT — 24H CLOCK STARTS NOW</button>
-            <button type="button" class="btn" onclick="toggleReg()" style="grid-column:span 2; border:none; opacity:0.3; font-size:10px;">CANCEL</button>
+            <button type="submit" id="profile-submit-btn" class="btn" style="grid-column:span 2;margin-top:8px;padding:10px;font-size:10px;">CREATE PROFILE — 24H CLOCK STARTS</button>
+            <button type="button" class="btn" onclick="closeProfileForm()" style="grid-column:span 2;border:none;opacity:0.3;font-size:10px;">CANCEL</button>
         </form>
     </div>
 </div>
 
-<!-- WORK UPLOAD OVERLAY — uploads inside a cluster -->
-<div id="work-reg-section" onclick="if(event.target.id==='work-reg-section')toggleWorkReg()">
-    <div class="form-container" onclick="event.stopPropagation()" style="position:fixed;top:0;left:0;width:100vw;height:100vh;display:none;justify-content:center;align-items:center;background:rgba(0,0,0,0.92);z-index:5000;backdrop-filter:blur(8px);">
-    </div>
-</div>
-
-<!-- WORK UPLOAD — proper overlay -->
-<div id="work-section" style="position:fixed;top:0;left:0;width:100vw;height:100vh;display:none;justify-content:center;align-items:center;background:rgba(0,0,0,0.92);z-index:5000;backdrop-filter:blur(8px);" onclick="if(event.target.id==='work-section')toggleWorkReg()">
+<!-- WORK UPLOAD OVERLAY — same as original DATAROOM -->
+<div id="reg-section" onclick="handleBgClick(event)">
     <div class="form-container" onclick="event.stopPropagation()">
-        <div class="form-close" onclick="toggleWorkReg()">×</div>
-        <h2 id="work-form-title" style="font-size:10px; text-transform:uppercase; margin-bottom:16px; letter-spacing:2px;">Upload Work — 24H</h2>
-
+        <div class="form-close" onclick="toggleReg()">×</div>
+        <h2 id="form-title" style="font-size:10px; text-transform:uppercase; margin-bottom:16px; letter-spacing:2px;">Upload Work — 24H</h2>
+        
         <div id="form-preview-container">
             <span style="font-size:9px; opacity:0.3; font-family:monospace;">PREVIEW</span>
         </div>
 
-        <form id="workForm" class="grid-form">
-            <input type="hidden" id="work-editing-id">
+        <form id="archiveForm" class="grid-form">
+            <input type="hidden" id="editing-id">
+            <input type="hidden" id="upload-time">
 
             <div>
                 <label>Year</label>
-                <input type="text" id="work-year" placeholder="2025">
+                <input type="text" id="year" placeholder="2025" required>
             </div>
             <div>
                 <label>Mode</label>
-                <select id="work-mode">
+                <select id="mode">
                     <option value="VIDEO">VIDEO</option>
                     <option value="PERFORMANCE">PERFORMANCE</option>
                     <option value="SOUND">SOUND</option>
@@ -432,36 +395,41 @@
 
             <div style="grid-column:span 2;">
                 <label>Title</label>
-                <input type="text" id="work-title" placeholder="Title of work" required>
-            </div>
-
-            <textarea id="work-notes" placeholder="Notes / description (optional)"></textarea>
-
-            <div style="grid-column:span 2;">
-                <label>File URL (Backblaze / Dropbox / direct link)</label>
-                <input type="text" id="work-path" placeholder="https://...">
+                <input type="text" id="title" placeholder="Title of work" required>
             </div>
 
             <div style="grid-column:span 2;">
-                <label>Link URL (for WWW works)</label>
-                <input type="text" id="work-link" placeholder="https://yourproject.com">
+                <label>Artist</label>
+                <input type="text" id="artist" placeholder="Your name">
+            </div>
+
+            <textarea id="materials" placeholder="Notes / description (optional)"></textarea>
+
+            <div style="grid-column:span 2;">
+                <label>File path or URL (Backblaze / Dropbox / direct link)</label>
+                <input type="text" id="manualPath" placeholder="media/video.mp4 or https://...">
             </div>
 
             <div style="grid-column:span 2;">
-                <label>Upload file (auto-fills URL path)</label>
-                <input type="file" id="work-file" style="border:none;padding:0;font-size:10px;" onchange="handleFileSelection(this)">
+                <label>URL Link (for WWW entries)</label>
+                <input type="text" id="linkUrl" placeholder="https://yourproject.com">
             </div>
 
             <div style="grid-column:span 2;">
-                <label>Viewer access code (optional)</label>
+                <label>Viewer access code</label>
                 <div style="display:flex; gap:8px;">
-                    <input type="text" id="work-access" placeholder="e.g. BLUE22" style="flex:1;">
-                    <button type="button" class="btn" onclick="generateCode('work-access')" style="white-space:nowrap;">GENERATE</button>
+                    <input type="text" id="accessCode" placeholder="e.g. WAVE24" style="flex:1;">
+                    <button type="button" class="btn" onclick="generateCode('accessCode')" style="white-space:nowrap;">GENERATE</button>
                 </div>
             </div>
 
-            <button type="submit" class="btn" style="grid-column:span 2; margin-top:8px; padding:10px; font-size:10px;">ADD WORK TO CLUSTER</button>
-            <button type="button" class="btn" onclick="toggleWorkReg()" style="grid-column:span 2; border:none; opacity:0.3; font-size:10px;">CANCEL</button>
+            <div style="grid-column:span 2;">
+                <label>Upload file (auto-fills path)</label>
+                <input type="file" id="mediaFile" style="border:none;padding:0;font-size:10px;" onchange="handleFileSelection(this)">
+            </div>
+
+            <button type="submit" id="submit-btn" class="btn" style="grid-column:span 2;margin-top:8px;padding:10px;font-size:10px;">COMMIT — 24H CLOCK STARTS NOW</button>
+            <button type="button" class="btn" onclick="toggleReg()" style="grid-column:span 2;border:none;opacity:0.3;font-size:10px;">CANCEL</button>
         </form>
     </div>
 </div>
@@ -471,7 +439,7 @@
     <div class="view-controls">
         <div class="bg-toggle black" onclick="setViewBg('#000000')"></div>
         <div class="bg-toggle white" onclick="setViewBg('#ffffff')"></div>
-        <div class="bg-toggle grey" onclick="setViewBg('#888888')"></div>
+        <div class="bg-toggle grey"  onclick="setViewBg('#888888')"></div>
         <button class="close-btn" onclick="closeRoom()">CLOSE</button>
     </div>
     <div id="media-container"></div>
@@ -493,62 +461,73 @@
 
 <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
 <script>
-// ── CONFIG ──
-const STUDIO_CODE   = 'studio';
-const PLATFORM_URL  = 'https://commons-on-demand.com';
+const STUDIO_CODE  = 'studio';
+const DATAROOM_URL = 'https://commons-on-demand.com';
 
-// ── STATE ──
-let makers         = [];
-let mainPositions  = {};
-let workPositions  = {};
-let cdTimers       = {};
-let currentMaker   = null;
-let activeWork     = null;
-let vjsPlayer      = null;
-let isAdmin        = sessionStorage.getItem('cod_admin') === 'true';
+// Always start logged out
+sessionStorage.removeItem('cod_admin');
+let isAdmin = false;
 
-if (isAdmin) document.body.classList.add('admin-active');
+let makers        = [];   // profile circles/ovals
+let archive       = [];   // works (flat, linked to maker by makerId)
+let makerPos      = {};
+let workPos       = {};
+let cdTimers      = {};
+let currentMaker  = null;
+let activeWork    = null;
+let vjsPlayer     = null;
 
 // ── LOAD ──
-async function loadData() {
+async function loadArchive() {
     try {
         const res = await fetch('data.json?nc=' + Date.now());
         if (res.ok) {
-            makers = await res.json();
-            localStorage.setItem('cod_data', JSON.stringify(makers));
-            log('LOADED // ' + makers.length + ' ON CANVAS');
+            const data = await res.json();
+            // support both old flat array and new {makers,archive} format
+            if (Array.isArray(data)) {
+                archive = data; makers = [];
+            } else {
+                makers  = data.makers  || [];
+                archive = data.archive || [];
+            }
+            saveLocal();
+            log('LOADED // ' + archive.length + ' WORKS');
         } else throw new Error();
     } catch(e) {
         try {
             const s = localStorage.getItem('cod_data');
-            if (s) { makers = JSON.parse(s); log('LOCAL // ' + makers.length + ' ON CANVAS'); }
-        } catch(err) { makers = []; }
+            if (s) {
+                const data = JSON.parse(s);
+                if (Array.isArray(data)) { archive=data; makers=[]; }
+                else { makers=data.makers||[]; archive=data.archive||[]; }
+                log('LOCAL // ' + archive.length + ' WORKS');
+            }
+        } catch(err) { makers=[]; archive=[]; }
     }
     purgeExpired();
     renderMain();
 }
 
-function saveLocal() { localStorage.setItem('cod_data', JSON.stringify(makers)); }
+function saveLocal() {
+    localStorage.setItem('cod_data', JSON.stringify({ makers, archive }));
+}
 
 function purgeExpired() {
     const now = Date.now();
+    // works always expire after 24h
+    archive = archive.filter(item => {
+        if (!item.uploadTime) return true;
+        return (now - item.uploadTime) < 24 * 3600 * 1000;
+    });
+    // makers expire after 24h (no permanent option)
     makers = makers.filter(m => {
-        if (m.permanent) return true;
         if (!m.uploadTime) return true;
         return (now - m.uploadTime) < 24 * 3600 * 1000;
-    }).map(m => {
-        if (m.works) {
-            m.works = m.works.filter(w => {
-                if (!w.uploadTime) return true;
-                return (now - w.uploadTime) < 24 * 3600 * 1000;
-            });
-        }
-        return m;
     });
     saveLocal();
 }
 
-// ── MAIN CANVAS ──
+// ── MAIN CANVAS — identity shapes ──
 function renderMain() {
     const canvas = document.getElementById('canvas');
     Object.values(cdTimers).forEach(t => clearInterval(t));
@@ -557,28 +536,26 @@ function renderMain() {
 
     const now    = Date.now();
     const active = makers.filter(m => {
-        if (m.permanent) return true;
         if (!m.uploadTime) return true;
         return (now - m.uploadTime) < 24 * 3600 * 1000;
     });
 
-    document.getElementById('live-count').textContent =
-        active.filter(m => !m.permanent).length + ' LIVE';
+    document.getElementById('live-count').textContent = active.length + ' LIVE';
 
     active.forEach((maker, i) => {
         const isCurator = maker.role === 'curator';
         const W = isCurator ? 110 : 88;
         const H = isCurator ? 66  : 88;
 
-        if (!mainPositions[maker.id]) {
+        if (!makerPos[maker.id]) {
             const mxX = Math.max(60, window.innerWidth  - W - 100);
             const mxY = Math.max(80, window.innerHeight - H - 100);
-            mainPositions[maker.id] = {
+            makerPos[maker.id] = {
                 x: 80 + (i * 157 + Math.floor(i * 0.6 * mxX)) % mxX,
                 y: 80 + (i * 103 + Math.floor(i * 0.5 * mxY)) % mxY
             };
         }
-        const pos = mainPositions[maker.id];
+        const pos = makerPos[maker.id];
 
         const wrap = document.createElement('div');
         wrap.className = 'identity-wrap';
@@ -586,8 +563,7 @@ function renderMain() {
         wrap.dataset.id = maker.id;
 
         const shape = document.createElement('div');
-        const cls   = isCurator ? 'identity-oval' : 'identity-circle';
-        shape.className = 'identity-shape ' + cls + (maker.permanent ? ' permanent' : '');
+        shape.className = 'identity-shape ' + (isCurator ? 'identity-oval' : 'identity-circle');
 
         const init = document.createElement('div');
         init.className   = 'identity-initials';
@@ -595,52 +571,54 @@ function renderMain() {
         shape.appendChild(init);
         wrap.appendChild(shape);
 
-        // name tag
         const nameEl = document.createElement('div');
         nameEl.className   = 'identity-name';
         nameEl.textContent = maker.name || '';
         wrap.appendChild(nameEl);
 
-        // countdown (active only)
-        if (!maker.permanent && maker.uploadTime) {
+        if (maker.uploadTime) {
             const cdEl = document.createElement('div');
             cdEl.className = 'identity-cd';
             wrap.appendChild(cdEl);
             cdTimers[maker.id] = setInterval(() => {
                 const rem = (maker.uploadTime + 24*3600*1000) - Date.now();
                 if (rem <= 0) { clearInterval(cdTimers[maker.id]); wrap.remove(); return; }
-                const h = Math.floor(rem/3600000), m = Math.floor((rem%3600000)/60000), s = Math.floor((rem%60000)/1000);
+                const h=Math.floor(rem/3600000), m=Math.floor((rem%3600000)/60000), s=Math.floor((rem%60000)/1000);
                 cdEl.textContent = pad(h)+':'+pad(m)+':'+pad(s);
                 if (rem < 3600000) cdEl.classList.add('urgent');
             }, 1000);
         }
 
-        // admin delete button
+        // admin: edit + delete buttons
         if (isAdmin) {
-            const del = document.createElement('button');
-            del.textContent = '×';
-            del.style.cssText = 'position:absolute;top:-10px;right:-10px;background:none;border:none;color:#ff4444;font-size:14px;cursor:pointer;opacity:0;transition:0.15s;pointer-events:auto;';
-            wrap.addEventListener('mouseenter', () => { if(isAdmin) del.style.opacity='0.8'; });
-            wrap.addEventListener('mouseleave', () => del.style.opacity='0');
-            del.onclick = (e) => { e.stopPropagation(); deleteMaker(maker.id); };
-            wrap.appendChild(del);
+            const editBtn = document.createElement('button');
+            editBtn.textContent = '✎';
+            editBtn.style.cssText = 'position:absolute;top:-14px;left:0;background:none;border:none;color:var(--accent);font-size:12px;cursor:pointer;opacity:0;transition:0.15s;';
+            const delBtn = document.createElement('button');
+            delBtn.textContent = '×';
+            delBtn.style.cssText = 'position:absolute;top:-14px;right:0;background:none;border:none;color:#ff4444;font-size:14px;cursor:pointer;opacity:0;transition:0.15s;';
+            wrap.addEventListener('mouseenter', () => { editBtn.style.opacity='0.8'; delBtn.style.opacity='0.8'; });
+            wrap.addEventListener('mouseleave', () => { editBtn.style.opacity='0'; delBtn.style.opacity='0'; });
+            editBtn.onclick = (e) => { e.stopPropagation(); openEditProfile(maker.id); };
+            delBtn.onclick  = (e) => { e.stopPropagation(); deleteMaker(maker.id); };
+            wrap.appendChild(editBtn);
+            wrap.appendChild(delBtn);
         }
 
-        // click → open cluster (not if permanent)
-        if (!maker.permanent) {
-            wrap.onclick = () => {
-                if (wrap._dragged) { wrap._dragged = false; return; }
-                openCluster(maker);
-            };
-        } else {
-            wrap.style.cursor = 'default';
-        }
+        wrap.onclick = () => {
+            if (wrap._dragged) { wrap._dragged=false; return; }
+            if (maker.accessCode && maker.accessCode !== '') {
+                const pass = prompt('Enter access code:');
+                if (!pass || pass.trim() !== maker.accessCode.trim()) { alert('INVALID CODE'); return; }
+            }
+            openCluster(maker);
+        };
 
-        makeDraggable(wrap, maker.id, mainPositions);
+        makeDraggable(wrap, maker.id, makerPos);
         canvas.appendChild(wrap);
     });
 
-    log('COMMONS_ON_DEMAND // ' + active.filter(m=>!m.permanent).length + ' LIVE');
+    log('COMMONS_ON_DEMAND // ' + active.length + ' LIVE');
 }
 
 // ── CLUSTER ──
@@ -650,122 +628,122 @@ function openCluster(maker) {
     document.getElementById('cluster-name-display').textContent = maker.name || '—';
     document.getElementById('cluster-role-display').textContent = maker.role === 'curator' ? 'CURATOR · PROGRAM' : 'MAKER · ARTIST';
 
-    // cluster countdown
     const cdEl = document.getElementById('cluster-cd');
-    if (cdTimers['_cluster']) clearInterval(cdTimers['_cluster']);
+    if (cdTimers['_c']) clearInterval(cdTimers['_c']);
     if (maker.uploadTime) {
-        cdTimers['_cluster'] = setInterval(() => {
+        cdTimers['_c'] = setInterval(() => {
             const rem = (maker.uploadTime + 24*3600*1000) - Date.now();
-            if (rem <= 0) { cdEl.textContent = 'EXPIRED'; return; }
-            const h = Math.floor(rem/3600000), m = Math.floor((rem%3600000)/60000), s = Math.floor((rem%60000)/1000);
+            if (rem <= 0) { cdEl.textContent='EXPIRED'; return; }
+            const h=Math.floor(rem/3600000), m=Math.floor((rem%3600000)/60000), s=Math.floor((rem%60000)/1000);
             cdEl.textContent = pad(h)+':'+pad(m)+':'+pad(s);
-            if (rem < 3600000) cdEl.style.color = '#ff4444';
+            if (rem < 3600000) cdEl.style.color='#ff4444';
         }, 1000);
     }
-
-    renderCluster(maker);
+    renderCluster();
 }
 
 function closeCluster() {
     document.getElementById('cluster-view').style.display = 'none';
-    if (cdTimers['_cluster']) clearInterval(cdTimers['_cluster']);
+    if (cdTimers['_c']) clearInterval(cdTimers['_c']);
     currentMaker = null;
 }
 
-function renderCluster(maker) {
+function renderCluster() {
     const canvas = document.getElementById('cluster-canvas');
-    Object.keys(cdTimers).filter(k=>k.startsWith('w_')).forEach(k => { clearInterval(cdTimers[k]); delete cdTimers[k]; });
+    Object.keys(cdTimers).filter(k=>k.startsWith('w_')).forEach(k=>{clearInterval(cdTimers[k]);delete cdTimers[k];});
     canvas.innerHTML = '';
 
-    (maker.works || []).forEach((work, i) => {
-        const geo  = workGeo(work.mode);
-        if (!workPositions[work.id]) {
+    const makerWorks = archive.filter(item =>
+        item.makerId === (currentMaker && currentMaker.id)
+    );
+
+    makerWorks.forEach((item, i) => {
+        const geo = shapeGeometry(item.mode);
+        if (!workPos[item.id]) {
             const mxX = Math.max(60, window.innerWidth  - geo.w - 80);
             const mxY = Math.max(80, window.innerHeight - geo.h - 80);
-            workPositions[work.id] = {
-                x: 80  + (i * 173 + Math.floor(i * 0.65 * mxX)) % mxX,
-                y: 100 + (i * 107 + Math.floor(i * 0.55 * mxY)) % mxY
+            workPos[item.id] = {
+                x: 60  + (i * 137 + Math.floor(i * 0.7 * mxX)) % mxX,
+                y: 100 + (i * 89  + Math.floor(i * 0.5 * mxY)) % mxY
             };
         }
-        const pos  = workPositions[work.id];
+        const pos  = workPos[item.id];
         const wrap = document.createElement('div');
         wrap.className = 'shape-wrap';
-        wrap.style.cssText = `left:${pos.x}px;top:${pos.y}px;width:${geo.w}px;height:${geo.h}px;`;
-        wrap.dataset.id = work.id;
+        wrap.dataset.id = item.id;
+        wrap.style.left = pos.x+'px'; wrap.style.top = pos.y+'px';
+        wrap.style.width = geo.w+'px'; wrap.style.height = geo.h+'px';
 
         const shape = document.createElement('div');
         shape.className = geo.cls;
-        shape.style.width = '100%'; shape.style.height = '100%';
+        shape.style.width='100%'; shape.style.height='100%';
+        if (geo.type==='circle') shape.style.borderRadius='50%';
 
-        // title centered
+        // title CENTERED
         const titleEl = document.createElement('div');
-        titleEl.className   = 'shape-title';
-        titleEl.textContent = work.title || 'UNTITLED';
+        titleEl.className = 'shape-title';
+        titleEl.textContent = item.title || 'UNTITLED';
         shape.appendChild(titleEl);
 
         // artist bottom-left
-        if (work.artist) {
-            const artEl = document.createElement('div');
-            artEl.className   = 'shape-label';
-            artEl.textContent = work.artist;
-            shape.appendChild(artEl);
-        }
+        const labelEl = document.createElement('div');
+        labelEl.className = 'shape-label';
+        labelEl.textContent = item.artist || '';
+        shape.appendChild(labelEl);
 
         // countdown top-right
-        const cdEl = document.createElement('div');
-        cdEl.className = 'shape-countdown';
-        shape.appendChild(cdEl);
-        if (work.uploadTime) {
-            cdTimers['w_'+work.id] = setInterval(() => {
-                const rem = (work.uploadTime + 24*3600*1000) - Date.now();
-                if (rem <= 0) { clearInterval(cdTimers['w_'+work.id]); cdEl.textContent='EXPIRED'; wrap.classList.add('expired'); return; }
+        const cd = document.createElement('div');
+        cd.className = 'shape-countdown';
+        shape.appendChild(cd);
+        if (item.uploadTime) {
+            cdTimers['w_'+item.id] = setInterval(() => {
+                const rem = (item.uploadTime + 24*3600*1000) - Date.now();
+                if (rem <= 0) { clearInterval(cdTimers['w_'+item.id]); cd.textContent='EXPIRED'; wrap.classList.add('expired'); return; }
                 const h=Math.floor(rem/3600000), m=Math.floor((rem%3600000)/60000), s=Math.floor((rem%60000)/1000);
-                cdEl.textContent = pad(h)+':'+pad(m)+':'+pad(s);
-                if (rem < 3600000) cdEl.classList.add('urgent');
+                cd.textContent = pad(h)+':'+pad(m)+':'+pad(s);
+                if (rem < 3600000) cd.classList.add('urgent');
             }, 1000);
         }
 
         // invite btn
         const invBtn = document.createElement('button');
         invBtn.textContent = 'INVITE';
-        invBtn.style.cssText = 'position:absolute;bottom:10px;right:10px;background:none;border:none;font-size:8px;letter-spacing:1px;color:var(--accent);cursor:pointer;text-transform:uppercase;opacity:0.4;padding:2px 4px;transition:0.15s;';
+        invBtn.style.cssText = 'position:absolute;bottom:10px;right:10px;background:none;border:none;font-size:8px;letter-spacing:1px;color:var(--accent);cursor:pointer;text-transform:uppercase;opacity:0.5;padding:2px 4px;transition:0.2s;';
         invBtn.onmouseenter = () => invBtn.style.opacity='1';
-        invBtn.onmouseleave = () => invBtn.style.opacity='0.4';
-        invBtn.onclick = (e) => { e.stopPropagation(); showInvite(work, maker); };
+        invBtn.onmouseleave = () => invBtn.style.opacity='0.5';
+        invBtn.onclick = (e) => { e.stopPropagation(); showInvite(item); };
         shape.appendChild(invBtn);
 
         // admin actions
-        if (isAdmin) {
-            const actions = document.createElement('div');
-            actions.className = 'shape-actions';
-            const editBtn = document.createElement('button');
-            editBtn.className='shape-action-btn'; editBtn.textContent='✎';
-            editBtn.onclick=(e)=>{ e.stopPropagation(); openEditWork(work.id); };
-            const delBtn = document.createElement('button');
-            delBtn.className='shape-action-btn shape-del-btn'; delBtn.textContent='×';
-            delBtn.onclick=(e)=>{ e.stopPropagation(); deleteWork(work.id); };
-            actions.appendChild(editBtn); actions.appendChild(delBtn);
-            shape.appendChild(actions);
-        }
+        const actions = document.createElement('div');
+        actions.className = 'shape-actions';
+        const editBtn = document.createElement('button');
+        editBtn.className='shape-action-btn'; editBtn.textContent='✎';
+        editBtn.onclick=(e)=>{e.stopPropagation(); openEditForm(e, item.id);};
+        const delBtn = document.createElement('button');
+        delBtn.className='shape-action-btn shape-del-btn'; delBtn.textContent='×';
+        delBtn.onclick=(e)=>{e.stopPropagation(); deleteWork(item.id);};
+        actions.appendChild(editBtn); actions.appendChild(delBtn);
+        shape.appendChild(actions);
 
         wrap.appendChild(shape);
         wrap.onclick = () => {
             if (wrap._dragged) { wrap._dragged=false; return; }
-            activateWork(work, maker);
+            activateWork(item);
         };
-        makeDraggable(wrap, work.id, workPositions);
+        makeDraggable(wrap, item.id, workPos);
         canvas.appendChild(wrap);
     });
 }
 
-function workGeo(mode) {
+function shapeGeometry(mode) {
     switch(mode) {
-        case 'VIDEO':       return { w:300, h:190, cls:'shape-video' };
-        case 'PERFORMANCE': return { w:200, h:200, cls:'shape-performance' };
-        case 'SOUND':       return { w:130, h:130, cls:'shape-sound' };
-        case 'WWW':         return { w:360, h:80,  cls:'shape-code' };
-        case 'IMAGE':       return { w:220, h:165, cls:'shape-image' };
-        default:            return { w:200, h:140, cls:'shape-image' };
+        case 'VIDEO':       return { w:280, h:180, type:'rect',   cls:'shape-video' };
+        case 'PERFORMANCE': return { w:200, h:200, type:'circle', cls:'shape-performance' };
+        case 'SOUND':       return { w:120, h:120, type:'rect',   cls:'shape-sound' };
+        case 'WWW':         return { w:340, h:80,  type:'rect',   cls:'shape-code' };
+        case 'IMAGE':       return { w:220, h:160, type:'rect',   cls:'shape-image' };
+        default:            return { w:200, h:140, type:'rect',   cls:'shape-image' };
     }
 }
 
@@ -773,7 +751,7 @@ function workGeo(mode) {
 function makeDraggable(el, id, store) {
     let down=false, sx, sy, ox, oy;
     el.addEventListener('mousedown', (e) => {
-        if (e.target.tagName==='BUTTON' || e.target.tagName==='SELECT') return;
+        if (e.target.tagName==='BUTTON'||e.target.tagName==='SELECT') return;
         down=true; el._dragged=false;
         sx=e.clientX; sy=e.clientY;
         ox=parseFloat(el.style.left); oy=parseFloat(el.style.top);
@@ -787,199 +765,163 @@ function makeDraggable(el, id, store) {
         el.style.left=nx+'px'; el.style.top=ny+'px';
         store[id]={x:nx,y:ny};
     });
-    window.addEventListener('mouseup', () => { down=false; });
+    window.addEventListener('mouseup', ()=>{ down=false; });
 }
 
 // ── ACTIVATE WORK ──
-function activateWork(work, maker) {
-    if (work.accessCode && work.accessCode !== '') {
-        const pass = prompt('Enter access code:');
-        if (!pass || pass.trim() !== work.accessCode.trim()) {
-            alert('INVALID CODE — ACCESS DENIED'); return;
-        }
+function activateWork(item) {
+    if (item.accessCode && item.accessCode !== '') {
+        const pass = prompt('Enter access code to watch:');
+        if (!pass || pass.trim() !== item.accessCode.trim()) { alert('INVALID_CODE // ACCESS_DENIED'); return; }
     }
-    openRoom(work, maker);
+    openRoom(item);
 }
 
-function openRoom(work, maker) {
+function openRoom(item) {
     const room      = document.getElementById('viewing-room');
     const container = document.getElementById('media-container');
     if (vjsPlayer) { vjsPlayer.dispose(); vjsPlayer=null; }
     container.innerHTML = '';
     room.style.display  = 'flex';
-    activeWork = work;
+    document.body.style.overflow = 'hidden';
+    activeWork = item;
 
-    if (work.mode==='WWW' && work.linkUrl) {
-        window.open(work.linkUrl, '_blank'); closeRoom(); return;
-    }
+    if (item.mode==='WWW' && item.linkUrl) { window.open(item.linkUrl,'_blank'); closeRoom(); return; }
 
-    const path     = work.manualPath || '';
-    const cleanPath = path.split('?')[0].toLowerCase();
-    const ext      = cleanPath.split('.').pop();
-    const isVideo  = ['mp4','mov','webm','avi','mkv','m4v','ogv'].includes(ext);
-    const isAudio  = ['mp3','m4a','wav','ogg','aac'].includes(ext);
+    const cleanPath = (item.manualPath||'').split('?')[0].toLowerCase();
+    const ext = cleanPath.split('.').pop();
+    const isVideo = ['mp4','mov','webm','avi','mkv','m4v','ogv'].includes(ext);
+    const isAudio = ['mp3','m4a','wav','ogg','aac'].includes(ext);
 
     if (isVideo) {
-        if (path.includes('dropbox.com')) {
-            const streamUrl = path.replace('www.dropbox.com','dl.dropboxusercontent.com').split('?')[0];
+        if (item.manualPath.includes('dropbox.com')) {
+            const streamUrl = item.manualPath
+                .replace('www.dropbox.com','dl.dropboxusercontent.com')
+                .split('?')[0];
             const iframe = document.createElement('iframe');
             iframe.src = streamUrl;
-            iframe.style.cssText = 'width:100%;height:100%;border:none;';
+            iframe.style.cssText='width:100%;height:100%;border:none;';
             iframe.setAttribute('allowfullscreen','');
+            iframe.setAttribute('allow','autoplay');
             container.appendChild(iframe);
         } else {
-            // Backblaze B2 via Cloudflare or direct
+            // Backblaze B2 via Cloudflare or any direct URL
             const vid = document.createElement('video');
             vid.setAttribute('controls',''); vid.setAttribute('autoplay',''); vid.setAttribute('playsinline','');
-            vid.style.cssText = 'max-width:100%;max-height:100%;width:auto;height:auto;';
-            vid.src = path;
-            vid.onerror = () => container.innerHTML = '<div style="color:#fff;font-family:monospace;font-size:11px;opacity:0.4;text-align:center;">MEDIA NOT FOUND</div>';
+            vid.style.cssText='max-width:100%;max-height:100%;width:auto;height:auto;';
+            vid.src = item.manualPath;
+            vid.onerror = () => { container.innerHTML='<div style="color:#fff;font-family:monospace;font-size:11px;text-align:center;opacity:0.4;">MEDIA NOT FOUND</div>'; };
             container.appendChild(vid);
             vid.play().catch(()=>{ vid.muted=true; vid.play(); });
         }
     } else if (isAudio) {
-        const wrap  = document.createElement('div');
-        wrap.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:24px;';
-        const label = document.createElement('div');
-        label.style.cssText = 'color:#fff;font-family:monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:0.5;';
-        label.textContent = work.title;
+        const wrap = document.createElement('div');
+        wrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:20px;';
+        const t = document.createElement('div');
+        t.style.cssText='color:#fff;font-family:monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:0.5;';
+        t.textContent = item.title;
         const audio = document.createElement('audio');
-        audio.controls=true; audio.autoplay=true; audio.src=path;
-        audio.style.cssText = 'width:360px;max-width:80vw;';
-        wrap.appendChild(label); wrap.appendChild(audio);
+        audio.controls=true; audio.autoplay=true; audio.src=item.manualPath;
+        audio.style.cssText='width:380px;max-width:80vw;';
+        wrap.appendChild(t); wrap.appendChild(audio);
         container.appendChild(wrap);
     } else {
         const img = document.createElement('img');
-        img.src = path;
-        img.style.cssText = 'max-width:85%;max-height:85%;object-fit:contain;';
-        img.onerror = () => container.innerHTML = '<div style="color:#fff;font-family:monospace;font-size:11px;opacity:0.4;">MEDIA NOT FOUND</div>';
+        img.src = item.manualPath;
+        img.style.cssText='max-width:85%;max-height:85%;object-fit:contain;';
+        img.onerror = () => { container.innerHTML='<div style="color:#fff;font-family:monospace;font-size:11px;opacity:0.4;">MEDIA NOT FOUND</div>'; };
         container.appendChild(img);
     }
 }
 
 function closeRoom() {
     if (vjsPlayer) { vjsPlayer.dispose(); vjsPlayer=null; }
-    document.getElementById('viewing-room').style.display = 'none';
-    document.getElementById('media-container').innerHTML  = '';
+    document.getElementById('viewing-room').style.display='none';
+    document.getElementById('media-container').innerHTML='';
+    document.body.style.overflow='hidden';
     setViewBg('#000000');
 }
 
 function setViewBg(c) {
-    document.getElementById('viewing-room').style.backgroundColor = c;
-    document.getElementById('media-container').style.backgroundColor = c;
+    document.getElementById('viewing-room').style.backgroundColor=c;
+    document.getElementById('media-container').style.backgroundColor=c;
 }
 
-// ── MAKER FORM ──
-function toggleReg(reset=true) {
-    const s = document.getElementById('reg-section');
-    const opening = s.style.display !== 'flex';
-    if (reset && opening) {
-        document.getElementById('makerForm').reset();
-        document.getElementById('editing-id').value = '';
-        document.getElementById('form-title').textContent = 'Add to Commons — 24H';
-        document.getElementById('submit-btn').textContent = 'COMMIT — 24H CLOCK STARTS NOW';
-    }
-    s.style.display = opening ? 'flex' : 'none';
+// ── PROFILE FORM ──
+function openProfileForm() {
+    document.getElementById('profileForm').reset();
+    document.getElementById('profile-editing-id').value='';
+    document.getElementById('profile-form-title').textContent='Create Profile';
+    document.getElementById('profile-submit-btn').textContent='CREATE PROFILE — 24H CLOCK STARTS';
+    document.getElementById('profile-section').style.display='flex';
 }
 
-document.getElementById('makerForm').onsubmit = function(e) {
+function openEditProfile(id) {
+    const maker = makers.find(m=>String(m.id)===String(id));
+    if (!maker) return;
+    document.getElementById('profile-editing-id').value=maker.id;
+    document.getElementById('profile-name').value=maker.name||'';
+    document.getElementById('profile-initials').value=maker.initials||'';
+    document.getElementById('profile-role').value=maker.role||'maker';
+    document.getElementById('profile-access').value=maker.accessCode||'';
+    document.getElementById('profile-form-title').textContent='Edit Profile';
+    document.getElementById('profile-submit-btn').textContent='UPDATE PROFILE';
+    document.getElementById('profile-section').style.display='flex';
+}
+
+function closeProfileForm() {
+    document.getElementById('profile-section').style.display='none';
+}
+
+document.getElementById('profileForm').onsubmit = function(e) {
     e.preventDefault();
-    const editId = document.getElementById('editing-id').value;
+    const editId = document.getElementById('profile-editing-id').value;
+    const name   = document.getElementById('profile-name').value.trim();
     const data   = {
-        name:       document.getElementById('maker-name').value.trim(),
-        initials:   document.getElementById('maker-initials').value.trim().toUpperCase() || getInitials(document.getElementById('maker-name').value),
-        role:       document.getElementById('maker-role').value,
-        payment:    document.getElementById('maker-payment').value.trim(),
-        accessCode: document.getElementById('maker-access').value.trim(),
-        permanent:  document.getElementById('maker-permanent').value === 'true',
-        uploadTime: editId ? (makers.find(m=>String(m.id)===String(editId))?.uploadTime||Date.now()) : Date.now(),
-        works:      editId ? (makers.find(m=>String(m.id)===String(editId))?.works||[]) : []
+        name,
+        initials:   document.getElementById('profile-initials').value.trim().toUpperCase() || getInitials(name),
+        role:       document.getElementById('profile-role').value,
+        accessCode: document.getElementById('profile-access').value.trim(),
+        uploadTime: editId ? (makers.find(m=>String(m.id)===String(editId))?.uploadTime||Date.now()) : Date.now()
     };
     if (editId) {
-        const idx = makers.findIndex(m=>String(m.id)===String(editId));
-        makers[idx] = {...makers[idx], ...data, id:editId};
+        const idx=makers.findIndex(m=>String(m.id)===String(editId));
+        makers[idx]={...makers[idx],...data,id:editId};
     } else {
-        data.id = String(Date.now()+Math.random());
+        data.id=String(Date.now()+Math.random());
         makers.push(data);
     }
-    saveLocal(); toggleReg(); renderMain();
+    saveLocal(); closeProfileForm(); renderMain();
 };
 
 function deleteMaker(id) {
-    makers = makers.filter(m=>String(m.id)!==String(id));
-    delete mainPositions[id];
+    makers=makers.filter(m=>String(m.id)!==String(id));
+    archive=archive.filter(w=>w.makerId!==id);
+    delete makerPos[id];
     saveLocal(); renderMain();
 }
 
-// ── WORK FORM ──
-function toggleWorkReg() {
-    const s       = document.getElementById('work-section');
-    const opening = s.style.display !== 'flex';
-    if (opening) {
-        document.getElementById('workForm').reset();
-        document.getElementById('work-editing-id').value = '';
-        document.getElementById('work-form-title').textContent = 'Upload Work' + (currentMaker ? ' — ' + currentMaker.name : '');
-        document.getElementById('form-preview-container').innerHTML = '<span style="font-size:9px;opacity:0.3;font-family:monospace;">PREVIEW</span>';
+// ── WORK FORM (original DATAROOM flow) ──
+function toggleReg(reset=true) {
+    const s=document.getElementById('reg-section');
+    const opening=s.style.display!=='flex';
+    if (reset && opening) {
+        document.getElementById('archiveForm').reset();
+        document.getElementById('editing-id').value='';
+        document.getElementById('form-title').textContent='Upload Work — 24H Clock Starts Now';
+        document.getElementById('submit-btn').textContent='COMMIT — 24H CLOCK STARTS NOW';
+        document.getElementById('form-preview-container').innerHTML='<span style="font-size:9px;opacity:0.3;font-family:monospace;">PREVIEW</span>';
+        // pre-fill artist from current maker
+        if (currentMaker) document.getElementById('artist').value=currentMaker.name||'';
     }
-    s.style.display = opening ? 'flex' : 'none';
+    s.style.display=opening?'flex':'none';
 }
 
-function openEditWork(workId) {
-    if (!currentMaker) return;
-    const work = (currentMaker.works||[]).find(w=>String(w.id)===String(workId));
-    if (!work) return;
-    document.getElementById('work-editing-id').value = work.id;
-    document.getElementById('work-year').value   = work.year||'';
-    document.getElementById('work-mode').value   = work.mode||'VIDEO';
-    document.getElementById('work-title').value  = work.title||'';
-    document.getElementById('work-notes').value  = work.notes||'';
-    document.getElementById('work-path').value   = work.manualPath||'';
-    document.getElementById('work-link').value   = work.linkUrl||'';
-    document.getElementById('work-access').value = work.accessCode||'';
-    document.getElementById('work-form-title').textContent = 'Edit Work';
-    document.getElementById('work-section').style.display = 'flex';
-}
-
-document.getElementById('workForm').onsubmit = function(e) {
-    e.preventDefault();
-    if (!currentMaker) return;
-    const editId = document.getElementById('work-editing-id').value;
-    const data   = {
-        year:       document.getElementById('work-year').value.trim(),
-        mode:       document.getElementById('work-mode').value,
-        title:      document.getElementById('work-title').value.trim()||'UNTITLED',
-        artist:     currentMaker.name,
-        notes:      document.getElementById('work-notes').value.trim(),
-        manualPath: document.getElementById('work-path').value.trim(),
-        linkUrl:    document.getElementById('work-link').value.trim(),
-        accessCode: document.getElementById('work-access').value.trim(),
-        uploadTime: editId ? ((currentMaker.works||[]).find(w=>String(w.id)===String(editId))?.uploadTime||Date.now()) : Date.now()
-    };
-    if (!currentMaker.works) currentMaker.works=[];
-    if (editId) {
-        const idx=currentMaker.works.findIndex(w=>String(w.id)===String(editId));
-        currentMaker.works[idx]={...currentMaker.works[idx],...data,id:editId};
-    } else {
-        data.id=String(Date.now()+Math.random());
-        currentMaker.works.push(data);
-    }
-    const mIdx=makers.findIndex(m=>String(m.id)===String(currentMaker.id));
-    if(mIdx>=0) makers[mIdx]=currentMaker;
-    saveLocal(); toggleWorkReg(); renderCluster(currentMaker);
-};
-
-function deleteWork(workId) {
-    if (!currentMaker) return;
-    currentMaker.works=(currentMaker.works||[]).filter(w=>String(w.id)!==String(workId));
-    delete workPositions[workId];
-    const mIdx=makers.findIndex(m=>String(m.id)===String(currentMaker.id));
-    if(mIdx>=0) makers[mIdx]=currentMaker;
-    saveLocal(); renderCluster(currentMaker);
-}
+function handleBgClick(e) { if(e.target.id==='reg-section') toggleReg(); }
 
 function handleFileSelection(input) {
     const file=input.files[0]; if (!file) return;
-    document.getElementById('work-path').value='media/'+file.name;
+    document.getElementById('manualPath').value='media/'+file.name;
     const container=document.getElementById('form-preview-container');
     const src=URL.createObjectURL(file);
     if (file.type.startsWith('video')) {
@@ -991,61 +933,106 @@ function handleFileSelection(input) {
     }
 }
 
+function openEditForm(e, id) {
+    e.stopPropagation();
+    const item=archive.find(i=>String(i.id)===String(id)); if (!item) return;
+    document.getElementById('editing-id').value=item.id;
+    document.getElementById('year').value=item.year||'';
+    document.getElementById('title').value=item.title||'';
+    document.getElementById('mode').value=item.mode||'VIDEO';
+    document.getElementById('artist').value=item.artist||'';
+    document.getElementById('materials').value=item.materials||'';
+    document.getElementById('manualPath').value=item.manualPath||'';
+    document.getElementById('linkUrl').value=item.linkUrl||'';
+    document.getElementById('accessCode').value=item.accessCode||'';
+    document.getElementById('form-title').textContent='Edit Entry';
+    document.getElementById('submit-btn').textContent='UPDATE';
+    toggleReg(false);
+}
+
+document.getElementById('archiveForm').onsubmit = function(e) {
+    e.preventDefault();
+    const editId = document.getElementById('editing-id').value;
+    const entryData = {
+        year:       document.getElementById('year').value,
+        mode:       document.getElementById('mode').value,
+        title:      document.getElementById('title').value.trim()||'UNTITLED',
+        artist:     document.getElementById('artist').value.trim(),
+        materials:  document.getElementById('materials').value,
+        manualPath: document.getElementById('manualPath').value.trim(),
+        linkUrl:    document.getElementById('linkUrl').value.trim(),
+        accessCode: document.getElementById('accessCode').value.trim(),
+        makerId:    currentMaker ? currentMaker.id : null,
+        uploadTime: editId ? (archive.find(i=>String(i.id)===String(editId))?.uploadTime||Date.now()) : Date.now()
+    };
+    if (editId) {
+        const idx=archive.findIndex(i=>String(i.id)===String(editId));
+        archive[idx]={...archive[idx],...entryData,id:editId};
+    } else {
+        entryData.id=String(Date.now()+Math.random());
+        archive.push(entryData);
+    }
+    saveLocal(); toggleReg();
+    if (currentMaker) renderCluster(); else renderMain();
+};
+
+function deleteWork(id) {
+    archive=archive.filter(i=>String(i.id)!==String(id));
+    delete workPos[id];
+    saveLocal();
+    if (currentMaker) renderCluster();
+}
+
 // ── INVITE ──
-function showInvite(work, maker) {
-    const payLine  = maker.payment    ? `\nPay to watch: ${maker.payment}` : '';
-    const codeLine = work.accessCode  ? `\nAccess code (after payment): ${work.accessCode}` : '';
-    const msg = `You are invited to watch:\n\n"${work.title}"${work.artist?' by '+work.artist:''} (${work.year||''})\n\nAvailable for 24 hours only.\n${PLATFORM_URL}${payLine}${codeLine}`;
-    document.getElementById('invite-text').textContent = msg;
-    document.getElementById('invite-overlay').style.display = 'flex';
-    activeWork = work;
+function showInvite(item) {
+    const msg=`You are invited to watch:\n\n"${item.title}"${item.artist?' by '+item.artist:''} (${item.year||''})\n\nAvailable for 24 hours only.\n${DATAROOM_URL}`;
+    document.getElementById('invite-text').textContent=msg;
+    document.getElementById('invite-overlay').style.display='flex';
+    activeWork=item;
 }
-
 function closeInvite() { document.getElementById('invite-overlay').style.display='none'; }
-
-function copyInvite() {
-    navigator.clipboard.writeText(document.getElementById('invite-text').textContent)
-        .then(()=>log('INVITE_COPIED'));
-}
-
+function copyInvite() { navigator.clipboard.writeText(document.getElementById('invite-text').textContent).then(()=>log('INVITE_COPIED')); }
 function emailInvite() {
     if (!activeWork) return;
-    const sub  = encodeURIComponent('Invitation: '+activeWork.title+' — COMMONS ON DEMAND 24H');
-    const body = encodeURIComponent(document.getElementById('invite-text').textContent);
+    const sub=encodeURIComponent('Invitation: '+activeWork.title+' — COMMONS ON DEMAND 24H');
+    const body=encodeURIComponent(document.getElementById('invite-text').textContent);
     window.location.href='mailto:?subject='+sub+'&body='+body;
 }
 
 // ── ADMIN ──
 function secretHandshake() {
-    const entry = prompt('Access code:');
+    const entry=prompt('Access code:');
     if (!entry) return;
     if (entry.trim().toLowerCase()===STUDIO_CODE) {
-        isAdmin=true; sessionStorage.setItem('cod_admin','true');
+        isAdmin=true;
         document.body.classList.add('admin-active');
-        log('ADMIN_MODE // ACTIVE');
+        log('ADMIN // ACTIVE');
     } else {
-        isAdmin=false; sessionStorage.removeItem('cod_admin');
+        isAdmin=false;
         document.body.classList.remove('admin-active');
     }
     renderMain();
-    if (currentMaker) renderCluster(currentMaker);
+    if (currentMaker) renderCluster();
 }
 
 // ── EXPORT / IMPORT ──
 function exportData() {
-    const s='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(makers,null,2));
+    const s='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify({makers,archive},null,2));
     const a=document.createElement('a'); a.href=s; a.download='data.json';
     document.body.appendChild(a); a.click(); a.remove();
     log('EXPORT_COMPLETE');
 }
-
 function importData() {
     const input=document.createElement('input'); input.type='file'; input.accept='.json';
-    input.onchange=e=>{
-        const r=new FileReader(); r.readAsText(e.target.files[0]);
+    input.onchange=ev=>{
+        const r=new FileReader(); r.readAsText(ev.target.files[0]);
         r.onload=re=>{
-            try { makers=JSON.parse(re.target.result); saveLocal(); renderMain(); log('IMPORT_COMPLETE'); }
-            catch(err){log('IMPORT_ERROR');}
+            try {
+                const data=JSON.parse(re.target.result);
+                if (Array.isArray(data)) { archive=data; makers=[]; }
+                else { makers=data.makers||[]; archive=data.archive||[]; }
+                saveLocal(); renderMain(); log('IMPORT_COMPLETE');
+            } catch(err){log('IMPORT_ERROR');}
         };
     }; input.click();
 }
@@ -1054,10 +1041,7 @@ function importData() {
 function toggleMode() { document.body.classList.toggle('light-mode'); }
 function log(msg) { document.getElementById('console-display').textContent=msg; }
 function pad(n) { return String(n).padStart(2,'0'); }
-function getInitials(name) {
-    if (!name) return '?';
-    return name.split(' ').map(p=>p[0]).join('').toUpperCase().slice(0,3);
-}
+function getInitials(name) { if(!name)return'?'; return name.split(' ').map(p=>p[0]).join('').toUpperCase().slice(0,3); }
 function generateCode(fieldId) {
     const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let code='';
@@ -1065,7 +1049,7 @@ function generateCode(fieldId) {
     document.getElementById(fieldId).value=code;
 }
 
-loadData();
+loadArchive();
 </script>
 </body>
 </html>
