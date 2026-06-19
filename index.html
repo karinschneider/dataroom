@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>COMMONS ON DEMAND — 24H</title>
+    <title>COMMONS ON DEMAND | 24H</title>
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
     <style>
-        :root {
-            --bg: #000000;
-            --text: #ffffff;
+        :root { 
+            --bg: #000000; 
+            --text: #ffffff; 
             --accent: #cccccc;
             --border: #333333;
             --pink: #c45c7a;
@@ -16,195 +16,130 @@
             --grey: #888888;
             --view-bg: #000000;
         }
+        body.light-mode { 
+            --bg: #ffffff; 
+            --text: #000000; 
+            --accent: #333333;
+            --border: #dddddd;
+        }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        body { 
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
             -webkit-font-smoothing: antialiased;
-            background: var(--bg);
-            color: var(--text);
+            background-color: var(--bg); 
+            color: var(--text); 
             overflow: hidden;
             width: 100vw; height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        /* ── HEADER ── */
+        /* HEADER */
         #header {
             position: fixed; top: 0; left: 0; right: 0;
             padding: 20px 30px;
             display: flex; justify-content: space-between; align-items: center;
-            z-index: 100; pointer-events: none;
+            z-index: 100;
+            pointer-events: none;
         }
         #header > * { pointer-events: auto; }
 
-        .site-title {
-            font-size: 11px; font-weight: bold; letter-spacing: 3px;
+        .title { 
+            font-size: 13px; font-weight: bold; letter-spacing: 3px; 
             text-transform: uppercase; cursor: pointer; user-select: none;
             color: var(--text);
         }
 
-        .header-right {
-            display: flex; gap: 10px; align-items: center;
-        }
-
-        .live-count {
-            font-size: 9px; letter-spacing: 1px; opacity: 0.4;
-            font-family: monospace; color: var(--text);
-        }
-
-        .btn {
+        .btn { 
             background: none; border: 1px solid var(--text); color: var(--text);
-            padding: 4px 10px; font-size: 9px; cursor: pointer;
-            text-transform: uppercase; letter-spacing: 1px; font-weight: bold;
-            transition: 0.15s;
+            padding: 4px 10px; font-size: 9px; cursor: pointer; text-transform: uppercase;
+            transition: 0.2s; letter-spacing: 1px; font-weight: bold;
         }
         .btn:hover { background: var(--text); color: var(--bg); }
+        .btn.active { background: var(--text); color: var(--bg); }
 
-        /* ── MAIN CANVAS ── */
+        /* FLOATING CANVAS */
         #canvas {
             position: fixed; top: 0; left: 0;
             width: 100vw; height: 100vh;
             overflow: hidden;
         }
 
-        /* ── IDENTITY SHAPES (main canvas) ── */
+        /* ── IDENTITY SHAPES (maker circles, curator ovals) ── */
         .identity-wrap {
             position: absolute; cursor: pointer;
-            transition: opacity 0.3s;
             user-select: none;
         }
-        .identity-wrap:hover .identity-shape { opacity: 0.7; }
+        .identity-shape {
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.2s;
+        }
+        .identity-shape:hover { opacity: 0.7; }
 
-        /* Artist = circle, pink */
         .identity-circle {
             border-radius: 50%;
             border: 1px solid var(--pink);
-            width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            transition: 0.2s;
         }
-        .identity-circle.permanent {
-            border-color: #444;
-            opacity: 0.35;
-        }
-
-        /* Curator = oval, yellow */
         .identity-oval {
             border-radius: 50%;
             border: 1px solid var(--yellow);
-            width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            transition: 0.2s;
         }
-        .identity-oval.permanent {
-            border-color: #444;
-            opacity: 0.35;
-        }
+        .identity-circle.permanent { border-color: #444; opacity: 0.3; }
+        .identity-oval.permanent   { border-color: #444; opacity: 0.3; }
 
         .identity-initials {
-            font-size: 11px; font-weight: bold; letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--text); opacity: 0.85;
+            font-size: 10px; font-weight: bold; letter-spacing: 2px;
+            text-transform: uppercase; color: var(--text); opacity: 0.85;
             pointer-events: none;
         }
         .identity-name {
             position: absolute; bottom: -18px; left: 50%;
             transform: translateX(-50%);
             font-size: 8px; letter-spacing: 1px; text-transform: uppercase;
-            color: var(--accent); opacity: 0.5;
-            white-space: nowrap; pointer-events: none;
+            color: var(--accent); opacity: 0.45; white-space: nowrap;
+            pointer-events: none;
         }
-        .identity-countdown {
+        .identity-cd {
             position: absolute; top: -16px; left: 50%;
             transform: translateX(-50%);
-            font-size: 7px; letter-spacing: 1px;
-            font-family: monospace; color: var(--accent); opacity: 0.5;
-            white-space: nowrap; pointer-events: none;
+            font-size: 7px; font-family: monospace; letter-spacing: 1px;
+            color: var(--accent); opacity: 0.45; white-space: nowrap;
+            pointer-events: none;
         }
-        .identity-countdown.urgent { color: #ff4444; opacity: 1; }
+        .identity-cd.urgent { color: #ff4444; opacity: 1; }
 
-        /* ── CLUSTER CANVAS (sub-level) ── */
-        #cluster-view {
-            position: fixed; top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background: var(--bg);
-            z-index: 500; display: none;
-            overflow: hidden;
-        }
-
-        #cluster-header {
-            position: fixed; top: 0; left: 0; right: 0;
-            padding: 20px 30px;
-            display: flex; justify-content: space-between; align-items: center;
-            z-index: 600; pointer-events: none;
-        }
-        #cluster-header > * { pointer-events: auto; }
-
-        .cluster-title-block { display: flex; flex-direction: column; gap: 3px; }
-        .cluster-maker-name {
-            font-size: 11px; font-weight: bold; letter-spacing: 2px;
-            text-transform: uppercase; color: var(--text);
-        }
-        .cluster-role {
-            font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
-            color: var(--accent); opacity: 0.4;
-        }
-
-        #cluster-canvas {
-            position: fixed; top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            overflow: hidden;
-        }
-
-        /* ── WORK SHAPES (cluster level) ── */
+        /* ── WORK SHAPES ── */
         .shape-wrap {
-            position: absolute; cursor: pointer;
+            position: absolute;
+            cursor: pointer;
             transition: opacity 0.3s;
         }
         .shape-wrap:hover { opacity: 0.75; }
-        .shape-wrap.expired { opacity: 0.15; pointer-events: none; }
+        .shape-wrap.expired { opacity: 0.2; pointer-events: none; }
 
-        /* VIDEO — landscape rectangle */
-        .shape-video {
-            border: 1px solid var(--pink);
-            background: transparent; position: relative;
-        }
-        /* PERFORMANCE — circle */
-        .shape-performance {
-            border: 1px solid var(--pink);
-            border-radius: 50%; background: transparent; position: relative;
-        }
-        /* SOUND — small square */
-        .shape-sound {
-            border: 1px solid var(--grey);
-            background: transparent; position: relative;
-        }
-        /* WWW — wide thin */
-        .shape-code {
-            border: 1px solid var(--pink);
-            background: transparent; position: relative;
-        }
-        /* IMAGE — medium rect */
-        .shape-image {
-            border: 1px solid var(--grey);
-            background: transparent; position: relative;
-        }
+        .shape-video       { border: 1px solid var(--pink);   background: transparent; position: relative; }
+        .shape-performance { border: 1px solid var(--pink);   border-radius: 50%; background: transparent; position: relative; }
+        .shape-sound       { border: 1px solid var(--grey);   background: transparent; position: relative; }
+        .shape-code        { border: 1px solid var(--pink);   background: transparent; position: relative; }
+        .shape-image       { border: 1px solid var(--grey);   background: transparent; position: relative; }
 
-        /* Title centered in shape */
+        /* Title CENTERED in shape */
         .shape-title {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
-            color: var(--text); opacity: 0.6;
-            pointer-events: none;
-            text-align: center;
+            color: var(--text); opacity: 0.55;
+            pointer-events: none; text-align: center;
             width: calc(100% - 20px);
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
-        .shape-artist {
-            position: absolute; bottom: 10px; left: 12px;
+        .shape-label {
+            position: absolute;
+            bottom: 10px; left: 12px;
             font-size: 8px; letter-spacing: 1px; text-transform: uppercase;
             color: var(--accent); opacity: 0.4;
             pointer-events: none;
@@ -213,93 +148,90 @@
         }
 
         .shape-countdown {
-            position: absolute; top: 10px; right: 10px;
+            position: absolute;
+            top: 10px; right: 10px;
             font-size: 8px; letter-spacing: 1px;
             color: var(--accent); opacity: 0.5;
-            font-family: monospace; pointer-events: none;
+            font-family: monospace;
+            pointer-events: none;
         }
         .shape-countdown.urgent { color: #ff4444; opacity: 1; }
 
-        .shape-invite-btn {
-            position: absolute; bottom: 10px; right: 10px;
-            background: none; border: none;
-            font-size: 8px; letter-spacing: 1px; color: var(--accent);
-            cursor: pointer; text-transform: uppercase; opacity: 0.4; padding: 2px 4px;
-            transition: 0.15s;
-        }
-        .shape-invite-btn:hover { opacity: 1; }
-
-        /* Admin */
+        /* Admin edit/delete */
         .shape-actions { position: absolute; top: 8px; left: 8px; display: none; gap: 6px; }
         body.admin-active .shape-actions { display: flex; }
         .shape-action-btn {
             font-size: 13px; cursor: pointer; opacity: 0.4;
-            color: var(--text); background: none; border: none; padding: 0; transition: 0.15s;
+            color: var(--text); transition: 0.2s;
+            background: none; border: none; padding: 0;
         }
         .shape-action-btn:hover { opacity: 1; }
         .shape-del-btn:hover { color: #ff0000; }
 
-        /* ── BOTTOM BAR ── */
+        /* BOTTOM BAR */
         #bottom-bar {
             position: fixed; bottom: 0; left: 0; right: 0;
             padding: 14px 30px;
             display: flex; justify-content: space-between; align-items: center;
-            z-index: 100; font-family: monospace; font-size: 9px;
-            color: var(--accent); pointer-events: none;
+            z-index: 100;
+            font-family: monospace; font-size: 9px;
+            color: var(--accent);
+            pointer-events: none;
         }
         #bottom-bar > * { pointer-events: auto; }
         #console-display { opacity: 0.4; }
         .db-controls { display: flex; gap: 20px; }
-        .db-controls span { cursor: pointer; opacity: 0.35; transition: 0.15s; }
+        .db-controls span { cursor: pointer; opacity: 0.4; transition: 0.2s; }
         .db-controls span:hover { opacity: 1; }
 
-        /* ── VIEWING ROOM ── */
-        #viewing-room {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: var(--view-bg); z-index: 2000;
-            display: none; justify-content: center; align-items: center;
+        /* LEGEND */
+        #legend {
+            position: fixed; bottom: 38px; right: 30px;
+            display: flex; flex-direction: column; gap: 8px;
+            z-index: 100; pointer-events: none;
         }
-        #media-container {
-            width: 100%; height: 100%;
-            display: flex; justify-content: center; align-items: center; padding: 80px;
+        .legend-item {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 8px; letter-spacing: 1px; text-transform: uppercase;
+            color: var(--accent); opacity: 0.3;
         }
-        .view-controls {
-            position: absolute; top: 24px; right: 24px; z-index: 2100;
-            display: flex; gap: 8px; align-items: center;
-        }
-        .bg-toggle {
-            width: 14px; height: 14px; border: 1px solid rgba(128,128,128,0.4);
-            cursor: pointer; transition: 0.15s;
-        }
-        .bg-toggle.black { background: #000; }
-        .bg-toggle.white { background: #fff; }
-        .bg-toggle.grey  { background: #888; }
-        .bg-toggle:hover { transform: scale(1.2); }
-        .close-btn {
-            background: var(--text); color: var(--bg); border: none;
-            padding: 7px 14px; font-size: 9px; font-weight: bold;
-            cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-left: 16px;
-        }
+        .leg-circle { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--pink); flex-shrink: 0; }
+        .leg-oval   { width: 18px; height: 12px; border-radius: 50%; border: 1px solid var(--yellow); flex-shrink: 0; }
 
-        /* ── UPLOAD OVERLAY ── */
-        #reg-section {
+        /* CLUSTER VIEW */
+        #cluster-view {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.93); z-index: 3000;
-            display: none; justify-content: center; align-items: center;
-            backdrop-filter: blur(6px);
+            background: var(--bg); z-index: 200; display: none; overflow: hidden;
         }
-        .form-container {
-            width: 90%; max-width: 560px; padding: 28px;
-            border: 1px solid var(--text); background: var(--bg);
+        #cluster-header {
+            position: fixed; top: 0; left: 0; right: 0;
+            padding: 20px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 300; pointer-events: none;
+        }
+        #cluster-header > * { pointer-events: auto; }
+        .cluster-name { font-size: 11px; font-weight: bold; letter-spacing: 3px; text-transform: uppercase; color: var(--text); }
+        .cluster-role { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); opacity: 0.4; margin-top: 2px; }
+        #cluster-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; overflow: hidden; }
+
+        /* REGISTRATION OVERLAY */
+        #reg-section { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.92); z-index: 5000;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(8px);
+        }
+        body.light-mode #reg-section { background: rgba(255,255,255,0.92); }
+
+        .form-container { 
+            width: 90%; max-width: 580px; padding: 28px; 
+            border: 1px solid var(--text); background: var(--bg); 
             position: relative; max-height: 90vh; overflow-y: auto;
         }
         .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        label {
-            font-size: 9px; text-transform: uppercase; color: var(--accent);
-            margin-bottom: 3px; display: block; letter-spacing: 1px; font-weight: bold;
-        }
-        input, select, textarea {
-            background: none; border: 1px solid var(--border); padding: 7px 8px;
+        label { font-size: 9px; text-transform: uppercase; color: var(--accent); margin-bottom: 3px; display: block; letter-spacing: 1px; font-weight: bold; }
+        input, select, textarea { 
+            background: none; border: 1px solid var(--border); padding: 7px 8px; 
             color: var(--text); font-size: 11px; width: 100%;
             font-family: inherit; border-radius: 0; outline: none;
         }
@@ -307,60 +239,65 @@
         textarea { grid-column: span 2; height: 48px; resize: none; }
         .form-close {
             position: absolute; top: 12px; right: 16px; cursor: pointer;
-            font-size: 22px; color: var(--text); opacity: 0.35; transition: 0.15s;
+            font-size: 22px; color: var(--text); opacity: 0.4; transition: 0.2s;
         }
         .form-close:hover { opacity: 1; }
+
         #form-preview-container {
-            grid-column: span 2; height: 100px;
-            background: #0a0a0a; border: 1px solid var(--border);
-            display: flex; justify-content: center; align-items: center;
-            overflow: hidden; margin-bottom: 4px;
+            grid-column: span 2; height: 110px; background: #111; border: 1px solid var(--border);
+            display: flex; justify-content: center; align-items: center; margin-bottom: 4px;
+            overflow: hidden;
         }
+        body.light-mode #form-preview-container { background: #eee; }
         #form-preview-container img, #form-preview-container video { max-height: 100%; max-width: 100%; object-fit: contain; }
 
-        /* ── INVITE OVERLAY ── */
+        /* VIEWING ROOM */
+        #viewing-room {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: var(--view-bg); z-index: 6000; display: none;
+            justify-content: center; align-items: center;
+        }
+        #media-container { 
+            width: 100%; height: 100%; display: flex; 
+            justify-content: center; align-items: center; 
+            padding: 80px; 
+        }
+
+        .view-controls { 
+            position: absolute; top: 24px; right: 24px; z-index: 7000; 
+            display: flex; gap: 8px; align-items: center; 
+        }
+        .bg-toggle { width: 16px; height: 16px; border: 1px solid rgba(128,128,128,0.4); cursor: pointer; transition: 0.2s; }
+        .bg-toggle.black { background: #000; }
+        .bg-toggle.white { background: #fff; }
+        .bg-toggle.grey { background: #888; }
+        .bg-toggle:hover { transform: scale(1.2); }
+        .close-btn { 
+            background: var(--text); color: var(--bg); border: none; 
+            padding: 8px 16px; font-size: 10px; font-weight: bold; 
+            cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-left: 16px; 
+        }
+
+        /* INVITE OVERLAY */
         #invite-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.92); z-index: 4000;
+            background: rgba(0,0,0,0.92); z-index: 5500;
             display: none; justify-content: center; align-items: center;
-            backdrop-filter: blur(6px);
+            backdrop-filter: blur(8px);
         }
         .invite-box {
-            width: 90%; max-width: 480px;
+            width: 90%; max-width: 500px;
             border: 1px solid var(--text); background: var(--bg);
             padding: 28px; position: relative;
         }
-        .invite-box h3 {
-            font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-            margin-bottom: 14px; opacity: 0.5;
-        }
+        .invite-box h3 { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; opacity: 0.5; }
         .invite-msg {
-            font-family: monospace; font-size: 10px; line-height: 1.8;
+            font-family: monospace; font-size: 11px; line-height: 1.7;
             border: 1px solid var(--border); padding: 12px;
             color: var(--accent); margin-bottom: 14px;
             white-space: pre-wrap; word-break: break-all;
         }
         .invite-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-
-        /* ── LEGEND ── */
-        #legend {
-            position: fixed; bottom: 36px; right: 30px;
-            display: flex; flex-direction: column; gap: 8px;
-            z-index: 100; pointer-events: none;
-        }
-        .legend-item {
-            display: flex; align-items: center; gap: 8px;
-            font-size: 8px; letter-spacing: 1px; text-transform: uppercase;
-            color: var(--accent); opacity: 0.35;
-        }
-        .legend-circle {
-            width: 14px; height: 14px; border-radius: 50%;
-            border: 1px solid var(--pink); flex-shrink: 0;
-        }
-        .legend-oval {
-            width: 20px; height: 14px; border-radius: 50%;
-            border: 1px solid var(--yellow); flex-shrink: 0;
-        }
 
         .admin-only { display: none; }
         body.admin-active .admin-only { display: inline-block; }
@@ -368,23 +305,23 @@
 </head>
 <body>
 
-<!-- MAIN HEADER -->
+<!-- HEADER -->
 <div id="header">
-    <div class="site-title" onclick="secretHandshake()">COMMONS ON DEMAND</div>
-    <div class="header-right">
-        <span class="live-count" id="live-count"></span>
-        <button class="btn admin-only" onclick="openUploadForm()">+ ADD MAKER</button>
+    <div class="title" onclick="secretHandshake()">COMMONS ON DEMAND</div>
+    <div style="display:flex; gap:8px; align-items:center;">
+        <span id="live-count" style="font-size:9px; letter-spacing:1px; opacity:0.4; font-family:monospace;"></span>
+        <button class="btn admin-only" onclick="toggleReg()">+ UPLOAD</button>
         <button class="btn" onclick="toggleMode()">⬡</button>
     </div>
 </div>
 
-<!-- MAIN CANVAS — identity circles & ovals -->
+<!-- MAIN CANVAS -->
 <div id="canvas"></div>
 
 <!-- LEGEND -->
 <div id="legend">
-    <div class="legend-item"><div class="legend-circle"></div> maker / artist</div>
-    <div class="legend-item"><div class="legend-oval"></div> curator / program</div>
+    <div class="legend-item"><div class="leg-circle"></div> maker</div>
+    <div class="legend-item"><div class="leg-oval"></div> curator</div>
 </div>
 
 <!-- BOTTOM BAR -->
@@ -396,32 +333,27 @@
     </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     CLUSTER VIEW (sub-canvas — opens on click)
-═══════════════════════════════════════════════ -->
+<!-- CLUSTER VIEW -->
 <div id="cluster-view">
     <div id="cluster-header">
-        <div class="cluster-title-block">
-            <div class="cluster-maker-name" id="cluster-maker-name">—</div>
-            <div class="cluster-role" id="cluster-role">MAKER</div>
+        <div>
+            <div class="cluster-name" id="cluster-name-display">—</div>
+            <div class="cluster-role" id="cluster-role-display">MAKER</div>
         </div>
-        <div style="display:flex; gap:10px; align-items:center;">
-            <span id="cluster-countdown" style="font-family:monospace; font-size:9px; opacity:0.4; letter-spacing:1px;"></span>
-            <button class="btn admin-only" id="cluster-upload-btn" onclick="openWorkForm()">+ UPLOAD WORK</button>
+        <div style="display:flex; gap:8px; align-items:center;">
+            <span id="cluster-cd" style="font-family:monospace; font-size:9px; opacity:0.4; letter-spacing:1px;"></span>
+            <button class="btn admin-only" onclick="toggleWorkReg()">+ UPLOAD</button>
             <button class="btn" onclick="closeCluster()">← COMMONS</button>
         </div>
     </div>
     <div id="cluster-canvas"></div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     UPLOAD OVERLAY — add maker / curator
-═══════════════════════════════════════════════ -->
-<div id="reg-section" onclick="handleOverlayClick(event, 'reg-section')">
+<!-- REGISTRATION OVERLAY — add maker/curator to main canvas -->
+<div id="reg-section" onclick="if(event.target.id==='reg-section')toggleReg()">
     <div class="form-container" onclick="event.stopPropagation()">
-        <div class="form-close" onclick="closeUploadForm()">×</div>
+        <div class="form-close" onclick="toggleReg()">×</div>
         <h2 id="form-title" style="font-size:10px; text-transform:uppercase; margin-bottom:16px; letter-spacing:2px;">Add to Commons — 24H</h2>
-
         <form id="makerForm" class="grid-form">
             <input type="hidden" id="editing-id">
 
@@ -429,12 +361,10 @@
                 <label>Name</label>
                 <input type="text" id="maker-name" placeholder="Artist or curator name" required>
             </div>
-
             <div>
                 <label>Initials</label>
                 <input type="text" id="maker-initials" placeholder="KS" maxlength="3">
             </div>
-
             <div>
                 <label>Role</label>
                 <select id="maker-role">
@@ -442,43 +372,41 @@
                     <option value="curator">Curator / Program</option>
                 </select>
             </div>
-
             <div style="grid-column:span 2;">
                 <label>Payment link (PayPal.me / Venmo)</label>
                 <input type="text" id="maker-payment" placeholder="https://paypal.me/yourname">
             </div>
-
             <div style="grid-column:span 2;">
-                <label>Access code (optional)</label>
+                <label>Access code (optional — viewers enter to enter cluster)</label>
                 <div style="display:flex; gap:8px;">
                     <input type="text" id="maker-access" placeholder="e.g. WAVE24" style="flex:1;">
                     <button type="button" class="btn" onclick="generateCode('maker-access')" style="white-space:nowrap;">GENERATE</button>
                 </div>
             </div>
-
             <div style="grid-column:span 2;">
-                <label>Permanent member (contributed to Commons Fund)</label>
+                <label>Permanent commons member</label>
                 <select id="maker-permanent">
                     <option value="false">No — active 24h only</option>
-                    <option value="true">Yes — stays on canvas</option>
+                    <option value="true">Yes — stays on canvas (contributed to commons fund)</option>
                 </select>
             </div>
-
-            <button type="submit" id="submit-btn" class="btn" style="grid-column:span 2; margin-top:8px; padding:10px; font-size:10px;">
-                COMMIT — 24H CLOCK STARTS NOW
-            </button>
-            <button type="button" class="btn" onclick="closeUploadForm()" style="grid-column:span 2; border:none; opacity:0.3; font-size:10px;">CANCEL</button>
+            <button type="submit" id="submit-btn" class="btn" style="grid-column:span 2; margin-top:8px; padding:10px; font-size:10px;">COMMIT — 24H CLOCK STARTS NOW</button>
+            <button type="button" class="btn" onclick="toggleReg()" style="grid-column:span 2; border:none; opacity:0.3; font-size:10px;">CANCEL</button>
         </form>
     </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     WORK UPLOAD OVERLAY — works inside a cluster
-═══════════════════════════════════════════════ -->
-<div id="work-section" onclick="handleOverlayClick(event, 'work-section')">
+<!-- WORK UPLOAD OVERLAY — uploads inside a cluster -->
+<div id="work-reg-section" onclick="if(event.target.id==='work-reg-section')toggleWorkReg()">
+    <div class="form-container" onclick="event.stopPropagation()" style="position:fixed;top:0;left:0;width:100vw;height:100vh;display:none;justify-content:center;align-items:center;background:rgba(0,0,0,0.92);z-index:5000;backdrop-filter:blur(8px);">
+    </div>
+</div>
+
+<!-- WORK UPLOAD — proper overlay -->
+<div id="work-section" style="position:fixed;top:0;left:0;width:100vw;height:100vh;display:none;justify-content:center;align-items:center;background:rgba(0,0,0,0.92);z-index:5000;backdrop-filter:blur(8px);" onclick="if(event.target.id==='work-section')toggleWorkReg()">
     <div class="form-container" onclick="event.stopPropagation()">
-        <div class="form-close" onclick="closeWorkForm()">×</div>
-        <h2 id="work-form-title" style="font-size:10px; text-transform:uppercase; margin-bottom:16px; letter-spacing:2px;">Upload Work</h2>
+        <div class="form-close" onclick="toggleWorkReg()">×</div>
+        <h2 id="work-form-title" style="font-size:10px; text-transform:uppercase; margin-bottom:16px; letter-spacing:2px;">Upload Work — 24H</h2>
 
         <div id="form-preview-container">
             <span style="font-size:9px; opacity:0.3; font-family:monospace;">PREVIEW</span>
@@ -510,13 +438,18 @@
             <textarea id="work-notes" placeholder="Notes / description (optional)"></textarea>
 
             <div style="grid-column:span 2;">
-                <label>File URL (Backblaze / Dropbox)</label>
+                <label>File URL (Backblaze / Dropbox / direct link)</label>
                 <input type="text" id="work-path" placeholder="https://...">
             </div>
 
             <div style="grid-column:span 2;">
                 <label>Link URL (for WWW works)</label>
                 <input type="text" id="work-link" placeholder="https://yourproject.com">
+            </div>
+
+            <div style="grid-column:span 2;">
+                <label>Upload file (auto-fills URL path)</label>
+                <input type="file" id="work-file" style="border:none;padding:0;font-size:10px;" onchange="handleFileSelection(this)">
             </div>
 
             <div style="grid-column:span 2;">
@@ -527,10 +460,8 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn" style="grid-column:span 2; margin-top:8px; padding:10px; font-size:10px;">
-                ADD WORK TO CLUSTER
-            </button>
-            <button type="button" class="btn" onclick="closeWorkForm()" style="grid-column:span 2; border:none; opacity:0.3; font-size:10px;">CANCEL</button>
+            <button type="submit" class="btn" style="grid-column:span 2; margin-top:8px; padding:10px; font-size:10px;">ADD WORK TO CLUSTER</button>
+            <button type="button" class="btn" onclick="toggleWorkReg()" style="grid-column:span 2; border:none; opacity:0.3; font-size:10px;">CANCEL</button>
         </form>
     </div>
 </div>
@@ -540,14 +471,14 @@
     <div class="view-controls">
         <div class="bg-toggle black" onclick="setViewBg('#000000')"></div>
         <div class="bg-toggle white" onclick="setViewBg('#ffffff')"></div>
-        <div class="bg-toggle grey"  onclick="setViewBg('#888888')"></div>
+        <div class="bg-toggle grey" onclick="setViewBg('#888888')"></div>
         <button class="close-btn" onclick="closeRoom()">CLOSE</button>
     </div>
     <div id="media-container"></div>
 </div>
 
 <!-- INVITE OVERLAY -->
-<div id="invite-overlay" onclick="handleOverlayClick(event, 'invite-overlay')">
+<div id="invite-overlay" onclick="if(event.target.id==='invite-overlay')closeInvite()">
     <div class="invite-box" onclick="event.stopPropagation()">
         <div class="form-close" onclick="closeInvite()">×</div>
         <h3>Invite to Watch</h3>
@@ -562,82 +493,73 @@
 
 <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
 <script>
-// ══════════════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════════════
-const STUDIO_CODE = 'studio';
-const PLATFORM_URL = 'https://commons-on-demand.com';
+// ── CONFIG ──
+const STUDIO_CODE   = 'studio';
+const PLATFORM_URL  = 'https://commons-on-demand.com';
 
-let makers = [];          // identity objects (circles/ovals)
-let positions = {};       // x,y per maker id on main canvas
-let workPositions = {};   // x,y per work id inside cluster
-let countdownTimers = {}; // all running intervals
-let currentMaker = null;  // active cluster
-let activeWork = null;
-let vjsPlayer = null;
-let isAdmin = sessionStorage.getItem('cod_admin') === 'true';
+// ── STATE ──
+let makers         = [];
+let mainPositions  = {};
+let workPositions  = {};
+let cdTimers       = {};
+let currentMaker   = null;
+let activeWork     = null;
+let vjsPlayer      = null;
+let isAdmin        = sessionStorage.getItem('cod_admin') === 'true';
 
 if (isAdmin) document.body.classList.add('admin-active');
 
-// ══════════════════════════════════════════════════
-// LOAD / SAVE
-// ══════════════════════════════════════════════════
+// ── LOAD ──
 async function loadData() {
     try {
         const res = await fetch('data.json?nc=' + Date.now());
         if (res.ok) {
             makers = await res.json();
-            localStorage.setItem('cod_makers', JSON.stringify(makers));
-            log('COMMONS_LOADED // ' + makers.length + ' MAKERS');
+            localStorage.setItem('cod_data', JSON.stringify(makers));
+            log('LOADED // ' + makers.length + ' ON CANVAS');
         } else throw new Error();
     } catch(e) {
         try {
-            const s = localStorage.getItem('cod_makers');
-            if (s) { makers = JSON.parse(s); log('LOCAL_CACHE // ' + makers.length + ' MAKERS'); }
+            const s = localStorage.getItem('cod_data');
+            if (s) { makers = JSON.parse(s); log('LOCAL // ' + makers.length + ' ON CANVAS'); }
         } catch(err) { makers = []; }
     }
     purgeExpired();
     renderMain();
 }
 
-function saveLocal() {
-    localStorage.setItem('cod_makers', JSON.stringify(makers));
-}
+function saveLocal() { localStorage.setItem('cod_data', JSON.stringify(makers)); }
 
 function purgeExpired() {
     const now = Date.now();
-    makers = makers.map(m => {
-        if (!m.permanent && m.uploadTime && (now - m.uploadTime) >= 24 * 60 * 60 * 1000) {
-            return null; // remove fully
-        }
-        // purge expired works inside cluster
+    makers = makers.filter(m => {
+        if (m.permanent) return true;
+        if (!m.uploadTime) return true;
+        return (now - m.uploadTime) < 24 * 3600 * 1000;
+    }).map(m => {
         if (m.works) {
             m.works = m.works.filter(w => {
                 if (!w.uploadTime) return true;
-                return (now - w.uploadTime) < 24 * 60 * 60 * 1000;
+                return (now - w.uploadTime) < 24 * 3600 * 1000;
             });
         }
         return m;
-    }).filter(Boolean);
+    });
     saveLocal();
 }
 
-// ══════════════════════════════════════════════════
-// MAIN CANVAS — identity circles & ovals
-// ══════════════════════════════════════════════════
+// ── MAIN CANVAS ──
 function renderMain() {
     const canvas = document.getElementById('canvas');
-
-    // clear old timers
-    Object.values(countdownTimers).forEach(t => clearInterval(t));
-    countdownTimers = {};
+    Object.values(cdTimers).forEach(t => clearInterval(t));
+    cdTimers = {};
     canvas.innerHTML = '';
 
-    const now = Date.now();
+    const now    = Date.now();
     const active = makers.filter(m => {
         if (m.permanent) return true;
         if (!m.uploadTime) return true;
-        return (now - m.uploadTime) < 24 * 60 * 60 * 1000;
+        return (now - m.uploadTime) < 24 * 3600 * 1000;
     });
 
     document.getElementById('live-count').textContent =
@@ -645,118 +567,98 @@ function renderMain() {
 
     active.forEach((maker, i) => {
         const isCurator = maker.role === 'curator';
-        const w = isCurator ? 120 : 90;
-        const h = isCurator ? 72 : 90;
+        const W = isCurator ? 110 : 88;
+        const H = isCurator ? 66  : 88;
 
-        if (!positions[maker.id]) {
-            const maxX = Math.max(60, window.innerWidth  - w - 100);
-            const maxY = Math.max(80, window.innerHeight - h - 100);
-            positions[maker.id] = {
-                x: 80 + (i * 157 + Math.floor(i * 0.6 * maxX)) % maxX,
-                y: 80 + (i * 103 + Math.floor(i * 0.5 * maxY)) % maxY
+        if (!mainPositions[maker.id]) {
+            const mxX = Math.max(60, window.innerWidth  - W - 100);
+            const mxY = Math.max(80, window.innerHeight - H - 100);
+            mainPositions[maker.id] = {
+                x: 80 + (i * 157 + Math.floor(i * 0.6 * mxX)) % mxX,
+                y: 80 + (i * 103 + Math.floor(i * 0.5 * mxY)) % mxY
             };
         }
-        const pos = positions[maker.id];
+        const pos = mainPositions[maker.id];
 
         const wrap = document.createElement('div');
         wrap.className = 'identity-wrap';
-        wrap.style.left   = pos.x + 'px';
-        wrap.style.top    = pos.y  + 'px';
-        wrap.style.width  = w + 'px';
-        wrap.style.height = h + 'px';
-        wrap.dataset.id   = maker.id;
+        wrap.style.cssText = `left:${pos.x}px;top:${pos.y}px;width:${W}px;height:${H}px;`;
+        wrap.dataset.id = maker.id;
 
-        // Shape
         const shape = document.createElement('div');
-        shape.className = isCurator
-            ? 'identity-oval' + (maker.permanent ? ' permanent' : '')
-            : 'identity-circle' + (maker.permanent ? ' permanent' : '');
-        shape.classList.add('identity-shape');
+        const cls   = isCurator ? 'identity-oval' : 'identity-circle';
+        shape.className = 'identity-shape ' + cls + (maker.permanent ? ' permanent' : '');
 
-        // Initials
-        const initials = document.createElement('div');
-        initials.className = 'identity-initials';
-        initials.textContent = maker.initials || getInitials(maker.name);
-        shape.appendChild(initials);
+        const init = document.createElement('div');
+        init.className   = 'identity-initials';
+        init.textContent = maker.initials || getInitials(maker.name);
+        shape.appendChild(init);
+        wrap.appendChild(shape);
 
-        // Name below
-        const nameTag = document.createElement('div');
-        nameTag.className = 'identity-name';
-        nameTag.textContent = maker.name || '';
-        wrap.appendChild(nameTag);
+        // name tag
+        const nameEl = document.createElement('div');
+        nameEl.className   = 'identity-name';
+        nameEl.textContent = maker.name || '';
+        wrap.appendChild(nameEl);
 
-        // Countdown above (only for active 24h)
+        // countdown (active only)
         if (!maker.permanent && maker.uploadTime) {
-            const cd = document.createElement('div');
-            cd.className = 'identity-countdown';
-            wrap.appendChild(cd);
-
-            countdownTimers[maker.id] = setInterval(() => {
-                const rem = (maker.uploadTime + 24*60*60*1000) - Date.now();
-                if (rem <= 0) {
-                    clearInterval(countdownTimers[maker.id]);
-                    wrap.remove();
-                    return;
-                }
-                const h2 = Math.floor(rem / 3600000);
-                const m2 = Math.floor((rem % 3600000) / 60000);
-                const s2 = Math.floor((rem % 60000) / 1000);
-                cd.textContent = pad(h2) + ':' + pad(m2) + ':' + pad(s2);
-                if (rem < 3600000) cd.classList.add('urgent');
+            const cdEl = document.createElement('div');
+            cdEl.className = 'identity-cd';
+            wrap.appendChild(cdEl);
+            cdTimers[maker.id] = setInterval(() => {
+                const rem = (maker.uploadTime + 24*3600*1000) - Date.now();
+                if (rem <= 0) { clearInterval(cdTimers[maker.id]); wrap.remove(); return; }
+                const h = Math.floor(rem/3600000), m = Math.floor((rem%3600000)/60000), s = Math.floor((rem%60000)/1000);
+                cdEl.textContent = pad(h)+':'+pad(m)+':'+pad(s);
+                if (rem < 3600000) cdEl.classList.add('urgent');
             }, 1000);
         }
 
-        wrap.appendChild(shape);
-
-        // Admin delete
+        // admin delete button
         if (isAdmin) {
             const del = document.createElement('button');
             del.textContent = '×';
-            del.style.cssText = 'position:absolute;top:-10px;right:-10px;background:none;border:none;color:#ff4444;font-size:14px;cursor:pointer;opacity:0;transition:0.2s;';
-            wrap.addEventListener('mouseenter', () => del.style.opacity = '0.8');
-            wrap.addEventListener('mouseleave', () => del.style.opacity = '0');
+            del.style.cssText = 'position:absolute;top:-10px;right:-10px;background:none;border:none;color:#ff4444;font-size:14px;cursor:pointer;opacity:0;transition:0.15s;pointer-events:auto;';
+            wrap.addEventListener('mouseenter', () => { if(isAdmin) del.style.opacity='0.8'; });
+            wrap.addEventListener('mouseleave', () => del.style.opacity='0');
             del.onclick = (e) => { e.stopPropagation(); deleteMaker(maker.id); };
             wrap.appendChild(del);
         }
 
-        // Click → open cluster
-        wrap.onclick = () => {
-            if (!maker.permanent) openCluster(maker);
-        };
-        if (maker.permanent) {
+        // click → open cluster (not if permanent)
+        if (!maker.permanent) {
+            wrap.onclick = () => {
+                if (wrap._dragged) { wrap._dragged = false; return; }
+                openCluster(maker);
+            };
+        } else {
             wrap.style.cursor = 'default';
-            wrap.title = maker.name + ' — commons member';
         }
 
-        // Drag
-        makeDraggable(wrap, maker.id, positions);
-
+        makeDraggable(wrap, maker.id, mainPositions);
         canvas.appendChild(wrap);
     });
 
-    log('COMMONS_ON_DEMAND // ' + active.filter(m => !m.permanent).length + ' LIVE');
+    log('COMMONS_ON_DEMAND // ' + active.filter(m=>!m.permanent).length + ' LIVE');
 }
 
-// ══════════════════════════════════════════════════
-// CLUSTER VIEW
-// ══════════════════════════════════════════════════
+// ── CLUSTER ──
 function openCluster(maker) {
     currentMaker = maker;
     document.getElementById('cluster-view').style.display = 'block';
-    document.getElementById('cluster-maker-name').textContent = maker.name || '—';
-    document.getElementById('cluster-role').textContent = maker.role === 'curator' ? 'CURATOR · PROGRAM' : 'MAKER · ARTIST';
+    document.getElementById('cluster-name-display').textContent = maker.name || '—';
+    document.getElementById('cluster-role-display').textContent = maker.role === 'curator' ? 'CURATOR · PROGRAM' : 'MAKER · ARTIST';
 
-    // countdown
+    // cluster countdown
+    const cdEl = document.getElementById('cluster-cd');
+    if (cdTimers['_cluster']) clearInterval(cdTimers['_cluster']);
     if (maker.uploadTime) {
-        const cdEl = document.getElementById('cluster-countdown');
-        if (countdownTimers['cluster']) clearInterval(countdownTimers['cluster']);
-        countdownTimers['cluster'] = setInterval(() => {
-            const rem = (maker.uploadTime + 24*60*60*1000) - Date.now();
+        cdTimers['_cluster'] = setInterval(() => {
+            const rem = (maker.uploadTime + 24*3600*1000) - Date.now();
             if (rem <= 0) { cdEl.textContent = 'EXPIRED'; return; }
-            const h = Math.floor(rem / 3600000);
-            const m = Math.floor((rem % 3600000) / 60000);
-            const s = Math.floor((rem % 60000) / 1000);
-            cdEl.textContent = pad(h) + ':' + pad(m) + ':' + pad(s);
+            const h = Math.floor(rem/3600000), m = Math.floor((rem%3600000)/60000), s = Math.floor((rem%60000)/1000);
+            cdEl.textContent = pad(h)+':'+pad(m)+':'+pad(s);
             if (rem < 3600000) cdEl.style.color = '#ff4444';
         }, 1000);
     }
@@ -766,328 +668,274 @@ function openCluster(maker) {
 
 function closeCluster() {
     document.getElementById('cluster-view').style.display = 'none';
-    if (countdownTimers['cluster']) clearInterval(countdownTimers['cluster']);
+    if (cdTimers['_cluster']) clearInterval(cdTimers['_cluster']);
     currentMaker = null;
-    renderMain(); // refresh main
 }
 
 function renderCluster(maker) {
     const canvas = document.getElementById('cluster-canvas');
-    // clear work timers
-    Object.keys(countdownTimers).forEach(k => {
-        if (k.startsWith('w_')) { clearInterval(countdownTimers[k]); delete countdownTimers[k]; }
-    });
+    Object.keys(cdTimers).filter(k=>k.startsWith('w_')).forEach(k => { clearInterval(cdTimers[k]); delete cdTimers[k]; });
     canvas.innerHTML = '';
 
-    const works = maker.works || [];
-
-    works.forEach((work, i) => {
-        const geo = workGeometry(work.mode);
-
+    (maker.works || []).forEach((work, i) => {
+        const geo  = workGeo(work.mode);
         if (!workPositions[work.id]) {
-            const maxX = Math.max(60, window.innerWidth  - geo.w - 80);
-            const maxY = Math.max(80, window.innerHeight - geo.h - 80);
+            const mxX = Math.max(60, window.innerWidth  - geo.w - 80);
+            const mxY = Math.max(80, window.innerHeight - geo.h - 80);
             workPositions[work.id] = {
-                x: 80 + (i * 173 + Math.floor(i * 0.65 * maxX)) % maxX,
-                y: 80 + (i * 107 + Math.floor(i * 0.55 * maxY)) % maxY
+                x: 80  + (i * 173 + Math.floor(i * 0.65 * mxX)) % mxX,
+                y: 100 + (i * 107 + Math.floor(i * 0.55 * mxY)) % mxY
             };
         }
-        const pos = workPositions[work.id];
-
+        const pos  = workPositions[work.id];
         const wrap = document.createElement('div');
         wrap.className = 'shape-wrap';
-        wrap.style.left   = pos.x + 'px';
-        wrap.style.top    = pos.y + 'px';
-        wrap.style.width  = geo.w + 'px';
-        wrap.style.height = geo.h + 'px';
-        wrap.dataset.id   = work.id;
+        wrap.style.cssText = `left:${pos.x}px;top:${pos.y}px;width:${geo.w}px;height:${geo.h}px;`;
+        wrap.dataset.id = work.id;
 
         const shape = document.createElement('div');
         shape.className = geo.cls;
         shape.style.width = '100%'; shape.style.height = '100%';
 
-        // Title — centered
-        const title = document.createElement('div');
-        title.className = 'shape-title';
-        title.textContent = work.title || 'UNTITLED';
-        shape.appendChild(title);
+        // title centered
+        const titleEl = document.createElement('div');
+        titleEl.className   = 'shape-title';
+        titleEl.textContent = work.title || 'UNTITLED';
+        shape.appendChild(titleEl);
 
-        // Artist bottom-left (for curator clusters showing multiple artists)
+        // artist bottom-left
         if (work.artist) {
-            const art = document.createElement('div');
-            art.className = 'shape-artist';
-            art.textContent = work.artist;
-            shape.appendChild(art);
+            const artEl = document.createElement('div');
+            artEl.className   = 'shape-label';
+            artEl.textContent = work.artist;
+            shape.appendChild(artEl);
         }
 
-        // Countdown top-right
-        const cd = document.createElement('div');
-        cd.className = 'shape-countdown';
-        shape.appendChild(cd);
-
+        // countdown top-right
+        const cdEl = document.createElement('div');
+        cdEl.className = 'shape-countdown';
+        shape.appendChild(cdEl);
         if (work.uploadTime) {
-            countdownTimers['w_' + work.id] = setInterval(() => {
-                const rem = (work.uploadTime + 24*60*60*1000) - Date.now();
-                if (rem <= 0) {
-                    clearInterval(countdownTimers['w_' + work.id]);
-                    cd.textContent = 'EXPIRED';
-                    wrap.classList.add('expired');
-                    return;
-                }
-                const h = Math.floor(rem / 3600000);
-                const m = Math.floor((rem % 3600000) / 60000);
-                const s = Math.floor((rem % 60000) / 1000);
-                cd.textContent = pad(h) + ':' + pad(m) + ':' + pad(s);
-                if (rem < 3600000) cd.classList.add('urgent');
+            cdTimers['w_'+work.id] = setInterval(() => {
+                const rem = (work.uploadTime + 24*3600*1000) - Date.now();
+                if (rem <= 0) { clearInterval(cdTimers['w_'+work.id]); cdEl.textContent='EXPIRED'; wrap.classList.add('expired'); return; }
+                const h=Math.floor(rem/3600000), m=Math.floor((rem%3600000)/60000), s=Math.floor((rem%60000)/1000);
+                cdEl.textContent = pad(h)+':'+pad(m)+':'+pad(s);
+                if (rem < 3600000) cdEl.classList.add('urgent');
             }, 1000);
         }
 
-        // Invite btn
+        // invite btn
         const invBtn = document.createElement('button');
-        invBtn.className = 'shape-invite-btn';
         invBtn.textContent = 'INVITE';
+        invBtn.style.cssText = 'position:absolute;bottom:10px;right:10px;background:none;border:none;font-size:8px;letter-spacing:1px;color:var(--accent);cursor:pointer;text-transform:uppercase;opacity:0.4;padding:2px 4px;transition:0.15s;';
+        invBtn.onmouseenter = () => invBtn.style.opacity='1';
+        invBtn.onmouseleave = () => invBtn.style.opacity='0.4';
         invBtn.onclick = (e) => { e.stopPropagation(); showInvite(work, maker); };
         shape.appendChild(invBtn);
 
-        // Admin actions
+        // admin actions
         if (isAdmin) {
             const actions = document.createElement('div');
             actions.className = 'shape-actions';
             const editBtn = document.createElement('button');
-            editBtn.className = 'shape-action-btn'; editBtn.textContent = '✎';
-            editBtn.onclick = (e) => { e.stopPropagation(); openEditWorkForm(work.id); };
+            editBtn.className='shape-action-btn'; editBtn.textContent='✎';
+            editBtn.onclick=(e)=>{ e.stopPropagation(); openEditWork(work.id); };
             const delBtn = document.createElement('button');
-            delBtn.className = 'shape-action-btn shape-del-btn'; delBtn.textContent = '×';
-            delBtn.onclick = (e) => { e.stopPropagation(); deleteWork(work.id); };
+            delBtn.className='shape-action-btn shape-del-btn'; delBtn.textContent='×';
+            delBtn.onclick=(e)=>{ e.stopPropagation(); deleteWork(work.id); };
             actions.appendChild(editBtn); actions.appendChild(delBtn);
             shape.appendChild(actions);
         }
 
         wrap.appendChild(shape);
-        wrap.onclick = () => activateWork(work, maker);
+        wrap.onclick = () => {
+            if (wrap._dragged) { wrap._dragged=false; return; }
+            activateWork(work, maker);
+        };
         makeDraggable(wrap, work.id, workPositions);
         canvas.appendChild(wrap);
     });
 }
 
-// ══════════════════════════════════════════════════
-// WORK GEOMETRY
-// ══════════════════════════════════════════════════
-function workGeometry(mode) {
+function workGeo(mode) {
     switch(mode) {
-        case 'VIDEO':       return { w: 300, h: 190, cls: 'shape-video' };
-        case 'PERFORMANCE': return { w: 200, h: 200, cls: 'shape-performance' };
-        case 'SOUND':       return { w: 120, h: 120, cls: 'shape-sound' };
-        case 'WWW':         return { w: 360, h: 80,  cls: 'shape-code' };
-        case 'IMAGE':       return { w: 220, h: 165, cls: 'shape-image' };
-        default:            return { w: 200, h: 140, cls: 'shape-image' };
+        case 'VIDEO':       return { w:300, h:190, cls:'shape-video' };
+        case 'PERFORMANCE': return { w:200, h:200, cls:'shape-performance' };
+        case 'SOUND':       return { w:130, h:130, cls:'shape-sound' };
+        case 'WWW':         return { w:360, h:80,  cls:'shape-code' };
+        case 'IMAGE':       return { w:220, h:165, cls:'shape-image' };
+        default:            return { w:200, h:140, cls:'shape-image' };
     }
 }
 
-// ══════════════════════════════════════════════════
-// DRAG
-// ══════════════════════════════════════════════════
-function makeDraggable(el, id, posStore) {
-    let dragging = false, startX, startY, origLeft, origTop, moved = false;
+// ── DRAG ──
+function makeDraggable(el, id, store) {
+    let down=false, sx, sy, ox, oy;
     el.addEventListener('mousedown', (e) => {
-        if (e.target.tagName === 'BUTTON') return;
-        dragging = true; moved = false;
-        startX = e.clientX; startY = e.clientY;
-        origLeft = parseFloat(el.style.left); origTop = parseFloat(el.style.top);
+        if (e.target.tagName==='BUTTON' || e.target.tagName==='SELECT') return;
+        down=true; el._dragged=false;
+        sx=e.clientX; sy=e.clientY;
+        ox=parseFloat(el.style.left); oy=parseFloat(el.style.top);
         e.preventDefault();
     });
     window.addEventListener('mousemove', (e) => {
-        if (!dragging) return;
-        const dx = e.clientX - startX, dy = e.clientY - startY;
-        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
-        const nx = origLeft + dx, ny = origTop + dy;
-        el.style.left = nx + 'px'; el.style.top = ny + 'px';
-        posStore[id] = { x: nx, y: ny };
+        if (!down) return;
+        const dx=e.clientX-sx, dy=e.clientY-sy;
+        if (Math.abs(dx)>4||Math.abs(dy)>4) el._dragged=true;
+        const nx=ox+dx, ny=oy+dy;
+        el.style.left=nx+'px'; el.style.top=ny+'px';
+        store[id]={x:nx,y:ny};
     });
-    window.addEventListener('mouseup', () => {
-        if (dragging && moved) el._dragged = true;
-        else el._dragged = false;
-        dragging = false;
-    });
-    el.addEventListener('click', (e) => {
-        if (el._dragged) { el._dragged = false; e.stopPropagation(); }
-    }, true);
+    window.addEventListener('mouseup', () => { down=false; });
 }
 
-// ══════════════════════════════════════════════════
-// ACTIVATE WORK (access code gate → viewing room)
-// ══════════════════════════════════════════════════
+// ── ACTIVATE WORK ──
 function activateWork(work, maker) {
     if (work.accessCode && work.accessCode !== '') {
-        const pass = prompt('Enter access code to watch:');
+        const pass = prompt('Enter access code:');
         if (!pass || pass.trim() !== work.accessCode.trim()) {
-            alert('INVALID CODE — ACCESS DENIED');
-            return;
+            alert('INVALID CODE — ACCESS DENIED'); return;
         }
     }
     openRoom(work, maker);
 }
 
 function openRoom(work, maker) {
-    const room = document.getElementById('viewing-room');
+    const room      = document.getElementById('viewing-room');
     const container = document.getElementById('media-container');
-    if (vjsPlayer) { vjsPlayer.dispose(); vjsPlayer = null; }
+    if (vjsPlayer) { vjsPlayer.dispose(); vjsPlayer=null; }
     container.innerHTML = '';
-    room.style.display = 'flex';
+    room.style.display  = 'flex';
     activeWork = work;
 
-    if (work.mode === 'WWW' && work.linkUrl) {
-        window.open(work.linkUrl, '_blank');
-        closeRoom(); return;
+    if (work.mode==='WWW' && work.linkUrl) {
+        window.open(work.linkUrl, '_blank'); closeRoom(); return;
     }
 
-    const cleanPath = (work.manualPath || '').split('?')[0].toLowerCase();
-    const ext = cleanPath.split('.').pop();
-    const isVideo = ['mp4','mov','webm','avi','mkv','m4v','ogv'].includes(ext);
-    const isAudio = ['mp3','m4a','wav','ogg','aac'].includes(ext);
+    const path     = work.manualPath || '';
+    const cleanPath = path.split('?')[0].toLowerCase();
+    const ext      = cleanPath.split('.').pop();
+    const isVideo  = ['mp4','mov','webm','avi','mkv','m4v','ogv'].includes(ext);
+    const isAudio  = ['mp3','m4a','wav','ogg','aac'].includes(ext);
 
     if (isVideo) {
-        const isDropbox = (work.manualPath || '').includes('dropbox.com');
-        const isBackblaze = (work.manualPath || '').includes('backblazeb2.com') || (work.manualPath || '').includes('backblaze');
-
-        if (isDropbox) {
-            const streamUrl = work.manualPath
-                .replace('www.dropbox.com', 'dl.dropboxusercontent.com')
-                .split('?')[0];
+        if (path.includes('dropbox.com')) {
+            const streamUrl = path.replace('www.dropbox.com','dl.dropboxusercontent.com').split('?')[0];
             const iframe = document.createElement('iframe');
             iframe.src = streamUrl;
-            iframe.style.cssText = 'width:100%; height:100%; border:none;';
-            iframe.setAttribute('allowfullscreen', '');
+            iframe.style.cssText = 'width:100%;height:100%;border:none;';
+            iframe.setAttribute('allowfullscreen','');
             container.appendChild(iframe);
         } else {
-            // Backblaze via Cloudflare or direct
+            // Backblaze B2 via Cloudflare or direct
             const vid = document.createElement('video');
-            vid.setAttribute('controls', '');
-            vid.setAttribute('autoplay', '');
-            vid.setAttribute('playsinline', '');
-            vid.style.cssText = 'max-width:100%; max-height:100%; width:auto; height:auto;';
-            vid.src = work.manualPath;
-            vid.onerror = () => {
-                container.innerHTML = '<div style="color:#fff;font-family:monospace;font-size:11px;text-align:center;opacity:0.5;">MEDIA NOT FOUND</div>';
-            };
+            vid.setAttribute('controls',''); vid.setAttribute('autoplay',''); vid.setAttribute('playsinline','');
+            vid.style.cssText = 'max-width:100%;max-height:100%;width:auto;height:auto;';
+            vid.src = path;
+            vid.onerror = () => container.innerHTML = '<div style="color:#fff;font-family:monospace;font-size:11px;opacity:0.4;text-align:center;">MEDIA NOT FOUND</div>';
             container.appendChild(vid);
-            vid.play().catch(() => { vid.muted = true; vid.play(); });
+            vid.play().catch(()=>{ vid.muted=true; vid.play(); });
         }
     } else if (isAudio) {
-        const wrap = document.createElement('div');
-        wrap.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:20px;';
-        const t = document.createElement('div');
-        t.style.cssText = 'color:#fff;font-family:monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:0.6;';
-        t.textContent = work.title;
+        const wrap  = document.createElement('div');
+        wrap.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:24px;';
+        const label = document.createElement('div');
+        label.style.cssText = 'color:#fff;font-family:monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:0.5;';
+        label.textContent = work.title;
         const audio = document.createElement('audio');
-        audio.controls = true; audio.autoplay = true;
-        audio.src = work.manualPath;
+        audio.controls=true; audio.autoplay=true; audio.src=path;
         audio.style.cssText = 'width:360px;max-width:80vw;';
-        wrap.appendChild(t); wrap.appendChild(audio);
+        wrap.appendChild(label); wrap.appendChild(audio);
         container.appendChild(wrap);
     } else {
         const img = document.createElement('img');
-        img.src = work.manualPath;
+        img.src = path;
         img.style.cssText = 'max-width:85%;max-height:85%;object-fit:contain;';
-        img.onerror = () => {
-            container.innerHTML = '<div style="color:#fff;font-family:monospace;font-size:11px;opacity:0.5;">MEDIA NOT FOUND</div>';
-        };
+        img.onerror = () => container.innerHTML = '<div style="color:#fff;font-family:monospace;font-size:11px;opacity:0.4;">MEDIA NOT FOUND</div>';
         container.appendChild(img);
     }
 }
 
 function closeRoom() {
-    if (vjsPlayer) { vjsPlayer.dispose(); vjsPlayer = null; }
+    if (vjsPlayer) { vjsPlayer.dispose(); vjsPlayer=null; }
     document.getElementById('viewing-room').style.display = 'none';
-    document.getElementById('media-container').innerHTML = '';
+    document.getElementById('media-container').innerHTML  = '';
     setViewBg('#000000');
 }
 
-function setViewBg(c) { document.getElementById('viewing-room').style.backgroundColor = c; }
-
-// ══════════════════════════════════════════════════
-// MAKER FORM (main canvas identity)
-// ══════════════════════════════════════════════════
-function openUploadForm() {
-    document.getElementById('makerForm').reset();
-    document.getElementById('editing-id').value = '';
-    document.getElementById('form-title').textContent = 'Add to Commons — 24H';
-    document.getElementById('submit-btn').textContent = 'COMMIT — 24H CLOCK STARTS NOW';
-    document.getElementById('reg-section').style.display = 'flex';
+function setViewBg(c) {
+    document.getElementById('viewing-room').style.backgroundColor = c;
+    document.getElementById('media-container').style.backgroundColor = c;
 }
 
-function closeUploadForm() {
-    document.getElementById('reg-section').style.display = 'none';
+// ── MAKER FORM ──
+function toggleReg(reset=true) {
+    const s = document.getElementById('reg-section');
+    const opening = s.style.display !== 'flex';
+    if (reset && opening) {
+        document.getElementById('makerForm').reset();
+        document.getElementById('editing-id').value = '';
+        document.getElementById('form-title').textContent = 'Add to Commons — 24H';
+        document.getElementById('submit-btn').textContent = 'COMMIT — 24H CLOCK STARTS NOW';
+    }
+    s.style.display = opening ? 'flex' : 'none';
 }
 
 document.getElementById('makerForm').onsubmit = function(e) {
     e.preventDefault();
-    const editingId = document.getElementById('editing-id').value;
-    const data = {
+    const editId = document.getElementById('editing-id').value;
+    const data   = {
         name:       document.getElementById('maker-name').value.trim(),
-        initials:   document.getElementById('maker-initials').value.trim().toUpperCase(),
+        initials:   document.getElementById('maker-initials').value.trim().toUpperCase() || getInitials(document.getElementById('maker-name').value),
         role:       document.getElementById('maker-role').value,
         payment:    document.getElementById('maker-payment').value.trim(),
         accessCode: document.getElementById('maker-access').value.trim(),
         permanent:  document.getElementById('maker-permanent').value === 'true',
-        uploadTime: editingId
-            ? (makers.find(m => String(m.id) === String(editingId))?.uploadTime || Date.now())
-            : Date.now(),
-        works: editingId
-            ? (makers.find(m => String(m.id) === String(editingId))?.works || [])
-            : []
+        uploadTime: editId ? (makers.find(m=>String(m.id)===String(editId))?.uploadTime||Date.now()) : Date.now(),
+        works:      editId ? (makers.find(m=>String(m.id)===String(editId))?.works||[]) : []
     };
-    if (!data.initials) data.initials = getInitials(data.name);
-
-    if (editingId) {
-        const idx = makers.findIndex(m => String(m.id) === String(editingId));
-        makers[idx] = { ...makers[idx], ...data, id: editingId };
+    if (editId) {
+        const idx = makers.findIndex(m=>String(m.id)===String(editId));
+        makers[idx] = {...makers[idx], ...data, id:editId};
     } else {
-        data.id = String(Date.now() + Math.random());
+        data.id = String(Date.now()+Math.random());
         makers.push(data);
     }
-    saveLocal();
-    closeUploadForm();
-    renderMain();
+    saveLocal(); toggleReg(); renderMain();
 };
 
 function deleteMaker(id) {
-    if (!confirm('Remove this maker from the commons?')) return;
-    makers = makers.filter(m => String(m.id) !== String(id));
-    delete positions[id];
-    saveLocal();
-    renderMain();
+    makers = makers.filter(m=>String(m.id)!==String(id));
+    delete mainPositions[id];
+    saveLocal(); renderMain();
 }
 
-// ══════════════════════════════════════════════════
-// WORK FORM (inside cluster)
-// ══════════════════════════════════════════════════
-function openWorkForm() {
+// ── WORK FORM ──
+function toggleWorkReg() {
+    const s       = document.getElementById('work-section');
+    const opening = s.style.display !== 'flex';
+    if (opening) {
+        document.getElementById('workForm').reset();
+        document.getElementById('work-editing-id').value = '';
+        document.getElementById('work-form-title').textContent = 'Upload Work' + (currentMaker ? ' — ' + currentMaker.name : '');
+        document.getElementById('form-preview-container').innerHTML = '<span style="font-size:9px;opacity:0.3;font-family:monospace;">PREVIEW</span>';
+    }
+    s.style.display = opening ? 'flex' : 'none';
+}
+
+function openEditWork(workId) {
     if (!currentMaker) return;
-    document.getElementById('workForm').reset();
-    document.getElementById('work-editing-id').value = '';
-    document.getElementById('work-form-title').textContent = 'Upload Work to ' + currentMaker.name;
-    document.getElementById('form-preview-container').innerHTML =
-        '<span style="font-size:9px;opacity:0.3;font-family:monospace;">PREVIEW</span>';
-    document.getElementById('work-section').style.display = 'flex';
-}
-
-function closeWorkForm() {
-    document.getElementById('work-section').style.display = 'none';
-}
-
-function openEditWorkForm(workId) {
-    if (!currentMaker) return;
-    const work = (currentMaker.works || []).find(w => String(w.id) === String(workId));
+    const work = (currentMaker.works||[]).find(w=>String(w.id)===String(workId));
     if (!work) return;
     document.getElementById('work-editing-id').value = work.id;
-    document.getElementById('work-year').value   = work.year || '';
-    document.getElementById('work-mode').value   = work.mode || 'VIDEO';
-    document.getElementById('work-title').value  = work.title || '';
-    document.getElementById('work-notes').value  = work.notes || '';
-    document.getElementById('work-path').value   = work.manualPath || '';
-    document.getElementById('work-link').value   = work.linkUrl || '';
-    document.getElementById('work-access').value = work.accessCode || '';
+    document.getElementById('work-year').value   = work.year||'';
+    document.getElementById('work-mode').value   = work.mode||'VIDEO';
+    document.getElementById('work-title').value  = work.title||'';
+    document.getElementById('work-notes').value  = work.notes||'';
+    document.getElementById('work-path').value   = work.manualPath||'';
+    document.getElementById('work-link').value   = work.linkUrl||'';
+    document.getElementById('work-access').value = work.accessCode||'';
     document.getElementById('work-form-title').textContent = 'Edit Work';
     document.getElementById('work-section').style.display = 'flex';
 }
@@ -1095,144 +943,128 @@ function openEditWorkForm(workId) {
 document.getElementById('workForm').onsubmit = function(e) {
     e.preventDefault();
     if (!currentMaker) return;
-    const editingId = document.getElementById('work-editing-id').value;
-    const data = {
+    const editId = document.getElementById('work-editing-id').value;
+    const data   = {
         year:       document.getElementById('work-year').value.trim(),
         mode:       document.getElementById('work-mode').value,
-        title:      document.getElementById('work-title').value.trim() || 'UNTITLED',
+        title:      document.getElementById('work-title').value.trim()||'UNTITLED',
         artist:     currentMaker.name,
         notes:      document.getElementById('work-notes').value.trim(),
         manualPath: document.getElementById('work-path').value.trim(),
         linkUrl:    document.getElementById('work-link').value.trim(),
         accessCode: document.getElementById('work-access').value.trim(),
-        uploadTime: editingId
-            ? ((currentMaker.works||[]).find(w=>String(w.id)===String(editingId))?.uploadTime || Date.now())
-            : Date.now()
+        uploadTime: editId ? ((currentMaker.works||[]).find(w=>String(w.id)===String(editId))?.uploadTime||Date.now()) : Date.now()
     };
-
-    if (!currentMaker.works) currentMaker.works = [];
-
-    if (editingId) {
-        const idx = currentMaker.works.findIndex(w => String(w.id) === String(editingId));
-        currentMaker.works[idx] = { ...currentMaker.works[idx], ...data, id: editingId };
+    if (!currentMaker.works) currentMaker.works=[];
+    if (editId) {
+        const idx=currentMaker.works.findIndex(w=>String(w.id)===String(editId));
+        currentMaker.works[idx]={...currentMaker.works[idx],...data,id:editId};
     } else {
-        data.id = String(Date.now() + Math.random());
+        data.id=String(Date.now()+Math.random());
         currentMaker.works.push(data);
     }
-
-    // sync back to makers array
-    const mIdx = makers.findIndex(m => String(m.id) === String(currentMaker.id));
-    if (mIdx >= 0) makers[mIdx] = currentMaker;
-    saveLocal();
-    closeWorkForm();
-    renderCluster(currentMaker);
+    const mIdx=makers.findIndex(m=>String(m.id)===String(currentMaker.id));
+    if(mIdx>=0) makers[mIdx]=currentMaker;
+    saveLocal(); toggleWorkReg(); renderCluster(currentMaker);
 };
 
 function deleteWork(workId) {
     if (!currentMaker) return;
-    currentMaker.works = (currentMaker.works || []).filter(w => String(w.id) !== String(workId));
+    currentMaker.works=(currentMaker.works||[]).filter(w=>String(w.id)!==String(workId));
     delete workPositions[workId];
-    const mIdx = makers.findIndex(m => String(m.id) === String(currentMaker.id));
-    if (mIdx >= 0) makers[mIdx] = currentMaker;
-    saveLocal();
-    renderCluster(currentMaker);
+    const mIdx=makers.findIndex(m=>String(m.id)===String(currentMaker.id));
+    if(mIdx>=0) makers[mIdx]=currentMaker;
+    saveLocal(); renderCluster(currentMaker);
 }
 
-// ══════════════════════════════════════════════════
-// INVITE
-// ══════════════════════════════════════════════════
+function handleFileSelection(input) {
+    const file=input.files[0]; if (!file) return;
+    document.getElementById('work-path').value='media/'+file.name;
+    const container=document.getElementById('form-preview-container');
+    const src=URL.createObjectURL(file);
+    if (file.type.startsWith('video')) {
+        container.innerHTML=`<video src="${src}" muted preload="metadata" style="pointer-events:none;max-height:100%;"></video>`;
+    } else if (file.type.startsWith('audio')) {
+        container.innerHTML=`<div style="font-family:monospace;font-size:11px;opacity:0.5;">♪ ${file.name}</div>`;
+    } else {
+        container.innerHTML=`<img src="${src}" style="max-height:100%;max-width:100%;object-fit:contain;">`;
+    }
+}
+
+// ── INVITE ──
 function showInvite(work, maker) {
-    const payLine  = maker.payment   ? `\nPay to watch: ${maker.payment}` : '';
-    const codeLine = work.accessCode ? `\nAccess code: ${work.accessCode}` : '';
-    const msg = `You are invited to watch:\n\n"${work.title}" (${work.year || ''})\n${maker.name}\n\nAvailable for 24 hours only.\n${PLATFORM_URL}${payLine}${codeLine}`;
+    const payLine  = maker.payment    ? `\nPay to watch: ${maker.payment}` : '';
+    const codeLine = work.accessCode  ? `\nAccess code (after payment): ${work.accessCode}` : '';
+    const msg = `You are invited to watch:\n\n"${work.title}"${work.artist?' by '+work.artist:''} (${work.year||''})\n\nAvailable for 24 hours only.\n${PLATFORM_URL}${payLine}${codeLine}`;
     document.getElementById('invite-text').textContent = msg;
     document.getElementById('invite-overlay').style.display = 'flex';
     activeWork = work;
 }
 
-function closeInvite() {
-    document.getElementById('invite-overlay').style.display = 'none';
-}
+function closeInvite() { document.getElementById('invite-overlay').style.display='none'; }
 
 function copyInvite() {
     navigator.clipboard.writeText(document.getElementById('invite-text').textContent)
-        .then(() => log('INVITE_COPIED'));
+        .then(()=>log('INVITE_COPIED'));
 }
 
 function emailInvite() {
     if (!activeWork) return;
-    const sub  = encodeURIComponent('Invitation: ' + activeWork.title + ' — COMMONS ON DEMAND 24H');
+    const sub  = encodeURIComponent('Invitation: '+activeWork.title+' — COMMONS ON DEMAND 24H');
     const body = encodeURIComponent(document.getElementById('invite-text').textContent);
-    window.location.href = 'mailto:?subject=' + sub + '&body=' + body;
+    window.location.href='mailto:?subject='+sub+'&body='+body;
 }
 
-// ══════════════════════════════════════════════════
-// UTILS
-// ══════════════════════════════════════════════════
-function handleOverlayClick(e, id) {
-    if (e.target.id === id) document.getElementById(id).style.display = 'none';
-}
-
-function generateCode(fieldId) {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let code = '';
-    for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
-    document.getElementById(fieldId).value = code;
-}
-
-function getInitials(name) {
-    if (!name) return '?';
-    return name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 3);
-}
-
-function pad(n) { return String(n).padStart(2, '0'); }
-
-function toggleMode() { document.body.classList.toggle('light-mode'); }
-
-function log(msg) { document.getElementById('console-display').textContent = msg; }
-
-// ══════════════════════════════════════════════════
-// ADMIN
-// ══════════════════════════════════════════════════
+// ── ADMIN ──
 function secretHandshake() {
     const entry = prompt('Access code:');
     if (!entry) return;
-    if (entry.trim().toLowerCase() === STUDIO_CODE) {
-        isAdmin = true;
-        sessionStorage.setItem('cod_admin', 'true');
+    if (entry.trim().toLowerCase()===STUDIO_CODE) {
+        isAdmin=true; sessionStorage.setItem('cod_admin','true');
         document.body.classList.add('admin-active');
         log('ADMIN_MODE // ACTIVE');
     } else {
-        isAdmin = false;
-        sessionStorage.removeItem('cod_admin');
+        isAdmin=false; sessionStorage.removeItem('cod_admin');
         document.body.classList.remove('admin-active');
     }
     renderMain();
     if (currentMaker) renderCluster(currentMaker);
 }
 
+// ── EXPORT / IMPORT ──
 function exportData() {
-    const s = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(makers, null, 2));
-    const a = document.createElement('a'); a.href = s; a.download = 'data.json';
+    const s='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(makers,null,2));
+    const a=document.createElement('a'); a.href=s; a.download='data.json';
     document.body.appendChild(a); a.click(); a.remove();
     log('EXPORT_COMPLETE');
 }
 
 function importData() {
-    const input = document.createElement('input'); input.type = 'file'; input.accept = '.json';
-    input.onchange = e => {
-        const r = new FileReader(); r.readAsText(e.target.files[0]);
-        r.onload = re => {
-            try {
-                makers = JSON.parse(re.target.result);
-                saveLocal(); renderMain();
-                log('IMPORT_COMPLETE // ' + makers.length + ' MAKERS');
-            } catch(err) { log('IMPORT_ERROR'); }
+    const input=document.createElement('input'); input.type='file'; input.accept='.json';
+    input.onchange=e=>{
+        const r=new FileReader(); r.readAsText(e.target.files[0]);
+        r.onload=re=>{
+            try { makers=JSON.parse(re.target.result); saveLocal(); renderMain(); log('IMPORT_COMPLETE'); }
+            catch(err){log('IMPORT_ERROR');}
         };
     }; input.click();
 }
 
-// ── START ──
+// ── UTILS ──
+function toggleMode() { document.body.classList.toggle('light-mode'); }
+function log(msg) { document.getElementById('console-display').textContent=msg; }
+function pad(n) { return String(n).padStart(2,'0'); }
+function getInitials(name) {
+    if (!name) return '?';
+    return name.split(' ').map(p=>p[0]).join('').toUpperCase().slice(0,3);
+}
+function generateCode(fieldId) {
+    const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code='';
+    for(let i=0;i<6;i++) code+=chars[Math.floor(Math.random()*chars.length)];
+    document.getElementById(fieldId).value=code;
+}
+
 loadData();
 </script>
 </body>
